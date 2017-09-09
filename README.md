@@ -1,4 +1,3 @@
-
 # Hacks everywhere
 This will be cleaned as soon as I clean up the delivery process of the blog.
 
@@ -35,7 +34,7 @@ server {
 ```
 
 
-## The *rest of the time*: **Automatic renewal**
+## The *rest of the time:* **Automatic renewal**
 
 Certificates from `letsencrypt` are only valid for 90 days.
 ### TODO: Document steps for automated renewal
