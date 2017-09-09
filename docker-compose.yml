@@ -6,4 +6,7 @@ services:
       dockerfile: NginxDockerfile
     ports:
       - "80:80"
+      - "443:443"
     network_mode: "host"
+    volumes:
+      - "/etc/letsencrypt/live/professionalbeginner.com/:/sslcert/:ro"
