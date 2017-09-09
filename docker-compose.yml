@@ -1,0 +1,9 @@
+version: '3'
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: NginxDockerfile
+    ports:
+      - "80:80"
+    network_mode: "host"
