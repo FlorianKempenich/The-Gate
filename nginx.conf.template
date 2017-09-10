@@ -39,13 +39,17 @@ http {
     ##################################
 
     ## SSL Security #####################################
-    server { # Redirect http->https
+    server {
         listen 80;
-        location / {
-            return 301 https://$host$uri;
-        }
+
+        # Serve static content (for the certificate challenge)
         location /.well-known/ {
             root /https/webroot/;
+        }
+
+        # Redirect http->https
+        location / {
+            return 301 https://$host$uri;
         }
     }
     ## END - SSL Security ###############################
