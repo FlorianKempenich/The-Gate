@@ -3,7 +3,8 @@
 This will be cleaned as soon as I clean up the delivery process of the blog.
 
 # Notes:
-To automatically generate first certificate:
+
+## The **first time**:
 
 #### On the server:
 * `mkdir /static-files-webroot`
@@ -32,3 +33,12 @@ server {
 }
 ## END - SSL Security ###############################
 ```
+
+
+## The *rest of the time*: **Automatic renewal**
+
+Certificates from `letsencrypt` are only valid for 90 days.
+### TODO: Document steps for automated renewal
+
+
+
