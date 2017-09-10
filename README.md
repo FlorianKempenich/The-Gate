@@ -14,7 +14,7 @@ To stop the `nginx`: `docker-compose down`
 ## Use HTTPS
 
 It is possible and very simple to use `HTTPS` thanks to this project:
-- https://gitlab.com/the_blog/letsencrypt-docker-daemon
+- [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon)
 
 ### Initial setup
 As explained in the `README.md` of the [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon).
