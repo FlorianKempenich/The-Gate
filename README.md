@@ -12,6 +12,8 @@ This will be cleaned as soon as I clean up the delivery process of the blog.
       -d www.professionalbeginner.com \
       -d professionalbeginner.com \
       -d the-ecosystem.xyz`
+      
+More info: https://certbot.eff.org/docs/using.html#webroot
 
 #### In the `nginx.conf`:
 ```
