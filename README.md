@@ -17,7 +17,7 @@ It is possible and very simple to use `HTTPS` thanks to this project:
 - https://gitlab.com/the_blog/letsencrypt-docker-daemon
 
 ### Initial setup
-As explained in the `README.md` of the `letsencrypt-docker-daemon` project. 
+As explained in the `README.md` of the [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon).
 We need to serve static content.
 
 **To do so:**
@@ -39,4 +39,4 @@ We need to serve static content.
   ```
 
 ### Generate the certificate & auto-renew
-Follow the instructions on the **certificate generation project.**
+Follow the instructions on the [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon).
