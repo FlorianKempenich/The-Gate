@@ -9,5 +9,8 @@ services:
       - "443:443"
     network_mode: "host"
     volumes:
-      - "/etc/letsencrypt/:/etc/letsencrypt/:ro"
-      - "/static-files-webroot/:/static-files-webroot/:ro"
+      # Mount the whole `/https/` folder. 
+      # Used to generate and hold certificates.
+      #  -> `/https/webroot/` is used to serve static content for the challenge during cert creation
+      #  -> `/https/sslcerts/` is where the certificates are stored
+      - "/https/:/https/"
