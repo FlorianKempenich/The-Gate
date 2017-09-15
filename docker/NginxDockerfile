@@ -4,18 +4,28 @@ FROM nginx
 RUN apt-get update && apt-get install -y \
     inotify-tools \
     procps \
+    openssl \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-
-# Temp: Path of the cert
-# Actually not needed, it's hardcoded in the script for now (`on_new_cert.sh`)
-ARG CERT_PATH=/https/letsencrypt/live/professionalbeginner.com
 
 # Add scripts
 RUN mkdir /scripts
 WORKDIR /scripts
 ADD ./docker/on_new_cert.sh .
 ADD ./docker/monitor_certificates_and_start_nginx.sh .
+ADD ./docker/create_fake_certificates.sh .
+
+
+
+
+
+
+# Temp: Path of the cert
+# Actually not needed, it's hardcoded in the script for now (`on_new_cert.sh` & `./create_fake_certificates.sh`)
+ARG CERT_PATH=/https/letsencrypt/live/professionalbeginner.com
+
+
+
 
 # Add `nginx` config
 RUN rm /etc/nginx/nginx.conf
