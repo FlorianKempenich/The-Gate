@@ -13,6 +13,7 @@ CERT_PATH=/https/letsencrypt/live/professionalbeginner.com
 # certificate generation without having to comment out `servers` that need certificates
 if [ ! -e "$CERT_PATH/fullchain.pem" ] || [ ! -e "$CERT_PATH/privkey.pem" ]
 then
+    mkdir -p $CERT_PATH
     ./create_fake_certificates.sh
 fi
 
