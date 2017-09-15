@@ -3,7 +3,7 @@ services:
   proxy:
     build:
       context: .
-      dockerfile: NginxDockerfile
+      dockerfile: ./docker/NginxDockerfile
     ports:
       - "80:80"
       - "443:443"
@@ -13,5 +13,5 @@ services:
       # Mount the whole `/https/` folder. 
       # Used to generate and hold certificates.
       #  -> `/https/webroot/` is used to serve static content for the challenge during cert creation
-      #  -> `/https/sslcerts/` is where the certificates are stored
+      #  -> `/https/letsencrypt/...` is where the certificates are stored
       - "/https/:/https/"
