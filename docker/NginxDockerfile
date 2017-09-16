@@ -10,10 +10,9 @@ RUN apt-get update && apt-get install -y \
 
 # Add scripts
 RUN mkdir /scripts
-WORKDIR /scripts
-ADD ./docker/on_new_cert.sh .
-ADD ./docker/monitor_certificates_and_start_nginx.sh .
-ADD ./docker/create_fake_certificates.sh .
+ADD ./docker/on_new_cert.sh /scripts
+ADD ./docker/monitor_certificates_and_start_nginx.sh /scripts
+ADD ./docker/create_fake_certificates.sh /scripts
 
 
 
@@ -27,8 +26,15 @@ ARG CERT_PATH=/https/letsencrypt/live/professionalbeginner.com
 
 
 
-# Add `nginx` config
-RUN rm /etc/nginx/nginx.conf
-ADD ./nginx.conf /etc/nginx/nginx.conf
+# Add `nginx` config:
+# - Base configuration
+# - Services configuration
+WORKDIR /etc/nginx/
+RUN rm ./nginx.conf
+ADD ./nginx.conf .
+ADD ./services.base.conf .
+ADD ./services.conf .
 
+# Start
+WORKDIR /scripts
 CMD ["./monitor_certificates_and_start_nginx.sh"]

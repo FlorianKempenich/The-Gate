@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LETSENCRYPT_CERT_DIR=/https/letsencrypt/live/
+LETSENCRYPT_CERT_DIR=/https/letsencrypt/live/professionalbeginner.com
 
 while true
   do
