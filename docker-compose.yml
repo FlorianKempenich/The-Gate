@@ -3,7 +3,7 @@ services:
   proxy:
     build:
       context: .
-      dockerfile: ./docker/NginxDockerfile
+      dockerfile: ./docker_image/NginxDockerfile
     ports:
       - "80:80"
       - "443:443"
