@@ -45,7 +45,7 @@ This file will then be included in the General `nginx` file.
     }
 
 #### Complete configuration
-An example of a working `services.conf` is available under `services.conf.template`
+An example of a working `services.conf` is available in the repository.
 
 
 
