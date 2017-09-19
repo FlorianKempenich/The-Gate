@@ -1,10 +1,80 @@
+# The Gate
 
-## Requirements
-- 1 folder to serve static content
-- 1 folder where certificates are stored, or will be stored
-- Services configuration
+Securely serve multiple services from one single entrypoint: **The Gate**
 
-## Services configuration
+##PUT PICTURE
+
+**No complex setup**
+
+- Just `up` and all your services are securely available.
+- All the configuration is dynamically loaded, no restart needed.
+
+**All services are served via `HTTPS`**
+
+- Provide the certificates and they'll be loaded automatically
+-    No idea how to provide certificates?  
+     [The Gate: Certificate Daemon](http://putlink.com) does that for you ;)
+      
+**Use your own rules**
+
+- Want to serve one service per domain? No problems!
+- Want to serve different services depending on the url path? No problem!
+- Be creative...
+
+**The Gate helps with your certificate challenges**
+
+- It serves a static directory under `www.yourdomain.com/.well-knows/`
+- No setup, just `up` and that directory is served.
+
+##PUT PICTURE (or here)
+
+
+## Usage
+
+> ## TODO:
+> It would be nice to have the `up` being a single script. Like we could get it through `wget`
+> The script would install `thegate`, and then:
+> 
+> - `thegate up` 
+> - `thegate down` 
+> 
+> Provide of course un-install script.
+> When doing `thegate up` we would check that the required config directory structure is present.
+
+> ## TIP:
+> When doing part on the `Letsencrypt` exemple.
+> Simply copy paste the result of the `tree` command in a code block. Works wonderfully :)
+
+
+### Requirements
+
+**The Gate** only needs **4 things**, for the magic to happen:
+
+- **Certificate directory**
+- **Certificate & PrivKey file names**
+- **Configuration directory:** Where to find `services.conf`
+- **Webroot directory:** From where to serve static content.
+
+#### Certificate directory & Certificate/PrivKey file names
+Describe what it is
+WRITE Special `symlink` case.
+REFER TO: `Letsencrypt` example
+#### Configuration directory: Where to find `services.conf`
+Explain quicky and REFER to dedicated part
+
+#### Webroot directory: From where to serve static content.
+Describe quickly
+And explain how it works in term of "what path the directory actually serves"
+--> Remember that we can not serve the `root` directly under well known, because that is not expected by let's encrypt
+The basic explanation is:
+
+Everything under `YOUR_STATIC_DIRECTORY/.well-known/` will be served under `http://www.yourdomain.com/.well-knows/`
+--> Port 80, no https for this one.
+
+
+
+
+### Services configuration
 
 The main configuration of your services is in the `services.conf` file.
 
@@ -68,7 +138,9 @@ An example of a working `services.conf` is available in the repository.
 
 
 
-
+# OLD README
+# OLD README
+# OLD README
 
 # Nginx as a Front-End Proxy
 
