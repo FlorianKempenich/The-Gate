@@ -3,16 +3,11 @@
 
 ## Simple, secure, configurable
 
-**The Gate** is a _quick to deploy_ entry gate for your server.
-
+**The Gate** is a _quick to deploy_ entry gate for your server.  
 It provides a **single `HTTPS` endpoint that redirects to your services.**  
-All you have to do is configure the **Redirection rules**.
 
-
-
-Securely serve multiple services from one single entrypoint: **The Gate**
-
-![Test](https://gitlab.com/the_blog/nginx-root-feproxy/raw/master/temp/the_gate.jpg)
+**Securely serve multiple services from one single entrypoint.**
+![The Gate](https://gitlab.com/the_blog/nginx-root-feproxy/raw/master/temp/the_gate.jpg)
 
 ### No complex setup
 
@@ -39,8 +34,6 @@ Securely serve multiple services from one single entrypoint: **The Gate**
 
 - It serves a static directory under `www.yourdomain.com/.well-knows/`
 - No setup, just `up` and that directory is served.
-
-## PUT PICTURE (or here)
 
 
 
