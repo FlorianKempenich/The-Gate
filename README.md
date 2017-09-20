@@ -1,82 +1,46 @@
 # The Gate
-## Https Front-end Proxy with Nginx & Docker
-### Simple, secure, configurable
+### Https Front-end Proxy with Nginx & Docker
+
+## Simple, secure, configurable
+
 **The Gate** is a _quick to deploy_ entry gate for your server.
 
 It provides a **single `HTTPS` endpoint that redirects to your services.**  
 All you have to do is configure the **Redirection rules**.
 
-# TODO: Add picture here :) 
-
-### Under the hood
-On top of redirecting to your services, **The Gate** takes care of a couple of things to simplify `HTTPS` connection and certificates management.
-- **The Gate** serves **static content under `/.well-known` endpoint** through `HTTP`
-  - This allows you to serve challenges for certificates without any modifications
-- **The Gate** redirects **all `HTTP` traffic to `HTTPS`**
-  - With the exception of the `/.well-known` static content
-- **The Gate** generates **temporary self-signed certificates** 
-  - That allows to have everything up, and generate the real certificates afterwards.
-  - Only if no existing certificate has been found.
-- **The Gate** watches for certificates renewal and **automatically loads new certificates**
-  -    This makes it easy to renew the certificates.  
-       Just override the existing ones, and done!
-
-
-## Usage
-### Requirements
-- 1 folder to serve static content
--    1 folder where certificates are stored, or will be stored  
-     Certificates must follow name convention:
-     - `fullchain.pem`: Certificate containing the entire chain of trust
-     - `privkey.pem`: Private Key associated with the Certificate
-  
-- Services configuration
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 Securely serve multiple services from one single entrypoint: **The Gate**
 
-##PUT PICTURE
+## PUT PICTURE
 
-**No complex setup**
+### No complex setup
 
 - Just `up` and all your services are securely available.
-- All the configuration is dynamically loaded, no restart needed.
+- All the configuration is dynamically loaded, **no restart needed.**
 
-**All services are served via `HTTPS`**
+### All services are served via `HTTPS`
 
+- All `HTTP` connections are redirected to `HTTPS`
 - Provide the certificates and they'll be loaded automatically
+-    No certificates but would like to `up` **The Gate**?  
+     No problem, **The Gate** generates its own self-signed certificates in case it can not find yours.  
+     Your certificates will be loaded the moment they are available
 -    No idea how to provide certificates?  
      [The Gate: Certificate Daemon](http://putlink.com) does that for you ;)
       
-**Use your own rules**
+### Use your own rules
 
 - Want to serve one service per domain? No problems!
 - Want to serve different services depending on the url path? No problem!
 - Be creative...
 
-**The Gate helps with your certificate challenges**
+### The Gate helps with your certificate challenges
 
 - It serves a static directory under `www.yourdomain.com/.well-knows/`
 - No setup, just `up` and that directory is served.
 
-##PUT PICTURE (or here)
+## PUT PICTURE (or here)
 
 
 ## Usage
