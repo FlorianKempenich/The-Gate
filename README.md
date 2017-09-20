@@ -12,7 +12,7 @@ All you have to do is configure the **Redirection rules**.
 
 Securely serve multiple services from one single entrypoint: **The Gate**
 
-## PUT PICTURE
+![Test](https://gitlab.com/the_blog/nginx-root-feproxy/raw/master/temp/the_gate.jpg)
 
 ### No complex setup
 
@@ -41,6 +41,7 @@ Securely serve multiple services from one single entrypoint: **The Gate**
 - No setup, just `up` and that directory is served.
 
 ## PUT PICTURE (or here)
+
 
 
 ## Usage
@@ -208,3 +209,4 @@ We need to serve static content.
 ### Generate the certificate & auto-renew
 Follow the instructions on the [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon).
 
+ 
