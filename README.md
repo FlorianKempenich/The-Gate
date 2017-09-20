@@ -1,10 +1,38 @@
+# The Gate
+## Https Front-end Proxy with Nginx & Docker
+### Simple, secure, configurable
+**The Gate** is a _quick to deploy_ entry gate for your server.
 
-## Requirements
+It provides a **single `HTTPS` endpoint that redirects to your services.**  
+All you have to do is configure the **Redirection rules**.
+
+# TODO: Add picture here :) 
+
+### Under the hood
+On top of redirecting to your services, **The Gate** takes care of a couple of things to simplify `HTTPS` connection and certificates management.
+- **The Gate** serves **static content under `/.well-known` endpoint** through `HTTP`
+  - This allows you to serve challenges for certificates without any modifications
+- **The Gate** redirects **all `HTTP` traffic to `HTTPS`**
+  - With the exception of the `/.well-known` static content
+- **The Gate** generates **temporary self-signed certificates** 
+  - That allows to have everything up, and generate the real certificates afterwards.
+  - Only if no existing certificate has been found.
+- **The Gate** watches for certificates renewal and **automatically loads new certificates**
+  -    This makes it easy to renew the certificates.  
+       Just override the existing ones, and done!
+
+
+## Usage
+### Requirements
 - 1 folder to serve static content
-- 1 folder where certificates are stored, or will be stored
+-    1 folder where certificates are stored, or will be stored  
+     Certificates must follow name convention:
+     - `fullchain.pem`: Certificate containing the entire chain of trust
+     - `privkey.pem`: Private Key associated with the Certificate
+  
 - Services configuration
 
-## Services configuration
+### Services configuration
 
 The main configuration of your services is in the `services.conf` file.
 
