@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CERT_PATH=/https/letsencrypt/live/professionalbeginner.com
+CERT_PATH=CERTIFICATE_PATH_PLACEHOLDER
 
 
 # IF NO CERTIFICATES FOUND => Create Fake Certificates:

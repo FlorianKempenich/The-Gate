@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LETSENCRYPT_CERT_DIR=/https/letsencrypt/live/professionalbeginner.com
+LETSENCRYPT_CERT_DIR=CERTIFICATE_PATH_PLACEHOLDER
 
 while true
   do
