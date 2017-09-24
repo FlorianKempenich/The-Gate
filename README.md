@@ -39,6 +39,20 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 
 ## Usage
 
+> Before using **The Gate**: 
+> - [Install]() the lightweight command-line tool
+> - Set up the [requirements]().
+
+**Once the initial setup is done, all you need to do is:**
+
+### `thegate up`
+**All configuration is loaded dynamically, no need to restart between each change.**  
+**To turn The Gate off: `thegate down`**
+
+<!-- TODO: Remove this line -->
+----------------------------------------
+
+
 > ## TODO:
 > It would be nice to have the `up` being a single script. Like we could get it through `wget`
 > The script would install `thegate`, and then:
@@ -53,22 +67,67 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 > When doing part on the `Letsencrypt` exemple.
 > Simply copy paste the result of the `tree` command in a code block. Works wonderfully :)
 
+### Installation
+
+To install **The Gate**, simply run this command:
+```
+do stuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuff
+```
+
+> Don't hesitate to take a peak in the script, never install things from the internet without understanding first.   
+> In that case however you'll realise this tiny script is pretty harmless :)
+
+> And of course, an uninstall script is also provided:
+```
+do stuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuff
+```
 
 ### Requirements
 
 **The Gate** only needs **4 things**, for the magic to happen:
 
-- **Certificate directory**
-- **Certificate & PrivKey file names**
-- **Configuration directory:** Where to find `services.conf`
-- **Webroot directory:** From where to serve static content.
+- **`Configuration directory`: The Heart of The Gate** |  `services.conf`
+- **`Certificate base directory`**
+- **`Certificate` & `PrivKey` file names**
+- **`Webroot directory`:** From where to serve static content.
 
-#### Certificate directory & Certificate/PrivKey file names
-Describe what it is
-WRITE Special `symlink` case.
-REFER TO: `Letsencrypt` example
-#### Configuration directory: Where to find `services.conf`
-Explain quicky and REFER to dedicated part
+#### `Configuration directory`: The Heart of The Gate |  `services.conf`
+
+This directory holds the most important configuration part of **The Gate: You Rules**
+
+You **redirection rules** are configured in a file called `services.conf`. To know more about how to setup your redirections rules, check the dedicated section: [Create your own rules | `services.conf`](#create-your-own-rules--servicesconf)  
+**The `configuration directory` is the location where your `services.conf` is located on the Host machine.**
+
+That directory will be mounted on **The Gate**, and every configuration change will be **automatically reloaded**. 
+No need to restart ;)
+
+#### Certificate base directory & Certificate/PrivKey file names
+
+To serve traffic to your domains via `HTTPS` **The Gate** needs to have access to your **`SSL` certificates and private key.**
+
+The `certificate base directory` is where these two files are located on the **Host** machine.  
+The `certificate` and `private key` `filenames` are pretty self-explanatory. The `filenames` are **relative to the `certificate base directory`.**
+
+> **Ex:**  
+> If your folder structure is as follow:
+> ```
+> https
+> └── certificates
+>     ├── my_cert.pem
+>     └── my_privkey.pem
+> ```
+> Then your configuration should be: 
+> ```
+> certificate_base_dir=/https/certificates
+> certificate_filename=./my_cert.pem
+> privkey_filename=./my_privkey.pem
+> ```
+
+##### Special Case: Certificates as `Symlink`
+In the case the `certificate` and/or `private key` `files` are actually `symlinks`, **both the `symlink` and the `actual file` must be present in the `certificate_base_dir`**
+
+An example of that scenario is presented in the **complete configuration example:**  
+**[An Example: Using Let's encrypt]()**
 
 #### Webroot directory: From where to serve static content.
 Describe quickly
@@ -79,10 +138,46 @@ The basic explanation is:
 Everything under `YOUR_STATIC_DIRECTORY/.well-known/` will be served under `http://www.yourdomain.com/.well-knows/`
 --> Port 80, no https for this one.
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- The Gate
+    - -
+    - Simple, secure, configurable
+        - No complex setup
+        - All services are served via `HTTPS`
+        - Use your own rules
+        - The Gate helps with your certificate challenges
+    - Usage
+        - Requirements
+            - Configuration directory: The Heart of The Gate |  `services.conf`
+            - Certificate directory & Certificate/PrivKey file names
+            - Webroot directory: From where to serve static content.
+        - Create your own rules | `services.conf`
+        - Examples
+            - Service:
+            - Complete configuration
+- OLD README
+- OLD README
+- OLD README
+- Nginx as a Front-End Proxy
+    - Usage
+- TODO
+- TODO
+    - Make explicit that this is specifically targeted for 1 use case:
+        - Certificates Generated by `Letsencrypt`
+        - One certificate for all domains served by this `nginx`
+- TODO
+- TODO
+    - Use HTTPS
+        - Initial setup
+        - Generate the certificate & auto-renew
+
+<!-- markdown-toc end -->
 
 
 
-### Services configuration
+### Create your own rules | `services.conf`
 
 The main configuration of your services is in the `services.conf` file.
 
