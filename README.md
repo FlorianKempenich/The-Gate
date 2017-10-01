@@ -47,7 +47,7 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 - Want to serve different services depending on the url path? No problem!
 - Be creative...
 
-### The Gate helps with your certificate challenges
+### The Gate helps you with your certificate challenges
 
 - It serves a static directory under `www.yourdomain.com/.well-knows/`
 - No setup, just `up` and that directory is served.
