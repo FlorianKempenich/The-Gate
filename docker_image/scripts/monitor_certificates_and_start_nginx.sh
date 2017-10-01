@@ -1,8 +1,5 @@
 #!/bin/sh
 
-CERT_PATH=CERTIFICATE_PATH_PLACEHOLDER
-
-
 # IF NO CERTIFICATES FOUND => Create Fake Certificates:
 # -----------------------------------------------------
 #
@@ -17,6 +14,9 @@ then
     ./create_fake_certificates.sh
 fi
 
+
+# Set certificate location on `services.base.conf`
+sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$CERT_PATH'|g' /etc/nginx/services.base.conf
 
 # On new certificates, reload `nginx`
 ./on_new_cert.sh nginx -s reload &

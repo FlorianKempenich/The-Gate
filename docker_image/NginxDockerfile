@@ -37,15 +37,6 @@ ADD ./docker_image/nginx_conf/services.base.conf .
 ###########################################################################
 ## END - ADD `NGINX` CONFIG ###############################################
 
-## SET CERTIFICATE LOCATION ###############################################
-###########################################################################
-ARG CERT_PATH
-RUN sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$CERT_PATH'|g' /scripts/on_new_cert.sh
-RUN sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$CERT_PATH'|g' /scripts/monitor_certificates_and_start_nginx.sh
-RUN sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$CERT_PATH'|g' /scripts/create_fake_certificates.sh
-RUN sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$CERT_PATH'|g' /etc/nginx/services.base.conf
-###########################################################################
-## END - SET CERTIFICATE LOCATION #########################################
 
 ## START COMMAND ##########################################################
 ###########################################################################

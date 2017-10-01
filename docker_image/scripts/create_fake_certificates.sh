@@ -1,9 +1,8 @@
 #!/bin/bash
 
-
 # TODO: Remove hardocded certificate location
 # (get from domain, `letsencrypt` structure is fine .... this image is dedicated to `letsencrypt`)
-cd CERTIFICATE_PATH_PLACEHOLDER
+cd $CERT_PATH
 
 openssl req \
         -subj "/CN=fakedomain.com/O=FakeCompany./C=US" \
