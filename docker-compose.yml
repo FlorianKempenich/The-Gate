@@ -16,4 +16,6 @@ services:
       # Used to generate and hold certificates.
       #  -> `/https/webroot/` is used to serve static content for the challenge during cert creation
       #  -> `/https/letsencrypt/...` is where the certificates are stored
-      - "/https/:/https/"
+      - "/https/webroot/:/https/webroot/"
+      - "/https/letsencrypt/:/https/letsencrypt/"
+      - "/https/config/:/etc/nginx/the-gate-services/"

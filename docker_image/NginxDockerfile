@@ -34,9 +34,6 @@ WORKDIR /etc/nginx/
 RUN rm ./nginx.conf
 ADD ./docker_image/nginx_conf/nginx.conf         .
 ADD ./docker_image/nginx_conf/services.base.conf .
-
-# User Services configuration
-ADD ./services.conf .
 ###########################################################################
 ## END - ADD `NGINX` CONFIG ###############################################
 
