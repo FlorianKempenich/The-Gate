@@ -8,9 +8,11 @@
 #
 # This also allows `nginx` to serve the static content necessary to the initial
 # certificate generation without having to comment out `servers` that need certificates
-if [ ! -e "$CERT_PATH/fullchain.pem" ] || [ ! -e "$CERT_PATH/privkey.pem" ]
+
+if [ ! -e "$FILE_CERT_ABS" ] || [ ! -e "$FILE_PRIVKEY_ABS" ]
 then
-    mkdir -p $CERT_PATH
+    mkdir -p $(dirname $FILE_CERT_ABS)
+    mkdir -p $(dirname $FILE_PRIVKEY_ABS)
     ./create_fake_certificates.sh
 fi
 

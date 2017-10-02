@@ -40,8 +40,10 @@ source ./config.env
 DIR_CONFIG=$(cleanup_trailing_slash $DIR_CONFIG)
 DIR_WEBROOT=$(cleanup_trailing_slash $DIR_WEBROOT)
 DIR_CERTIFICATES=$(cleanup_trailing_slash $DIR_CERTIFICATES)
-FILE_CERT_ABS=$(full_path $DIR_CERTIFICATES $FILE_CERT)
-FILE_PRIVKEY_ABS=$(full_path $DIR_CERTIFICATES $FILE_PRIVKEY)
+
+DIR_CERTIFICATES_IN_CONTAINER="/https/certificates/"
+FILE_CERT_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_CERT)
+FILE_PRIVKEY_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_PRIVKEY)
 ## End - Load configuration #####################################
 
 
@@ -66,7 +68,9 @@ docker run \
        --restart=always \
        --name=the-gate \
        -e CERT_PATH="/https/certificates/whatever" \
+       -e FILE_CERT_ABS=$FILE_CERT_ABS_IN_CONTAINER \
+       -e FILE_PRIVKEY_ABS=$FILE_PRIVKEY_ABS_IN_CONTAINER \
        -v "$DIR_WEBROOT:/https/webroot/" \
-       -v "$DIR_CERTIFICATES:/https/certificates/" \
+       -v "$DIR_CERTIFICATES:$DIR_CERTIFICATES_IN_CONTAINER" \
        -v "$DIR_CONFIG:/etc/nginx/the-gate-services/" \
        shockn745/the-gate
