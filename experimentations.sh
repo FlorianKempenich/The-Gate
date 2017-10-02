@@ -18,7 +18,7 @@ echo $(full_path $dir         $file_nodot)
 echo $(full_path $dir_noslash $file_nodot)
 
 FILE_ABS=$(full_path $dir $file)
-CERT_PATH="${FILE_ABS%"$(basename $FILE_ABS)"}" # Temporary hack :) 
+CERT_PATH="${FILE_ABS%"$(basename $FILE_ABS)"}" # Temporary hack :)
 
 echo ""
 echo "Results:"
