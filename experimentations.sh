@@ -26,3 +26,23 @@ echo "FILE_ABS  ->  $FILE_ABS"
 echo "CERT_PATH -> $CERT_PATH"
 echo
 echo "\$(dirname \$FILE_ABS) -> $(dirname $FILE_ABS)"
+
+hey=/https/letsencrypt/live/the-ecosystem.xyz/fullchain.pem
+hey2=/https/letsencrypt/live/the-ecosystem.xyz/asdf.pem
+boom=/https/letsencrypt/live/another-dir/fullchain.pem
+
+function same_basedir {
+    if [ "$(dirname $1)" == "$(dirname $2)" ]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+echo "echo same_basedir \$hey \$hey2 ==> "$(same_basedir $hey $hey2)
+echo "echo same_basedir \$hey \$boom ==> "$(same_basedir $hey $boom)
+echo "echo same_basedir \$hey2 \$boom ==> "$(same_basedir $hey2 $boom)
+
+if [ "$(same_basedir $hey $hey2)" == true ]; then
+    echo IT WORKS
+fi
