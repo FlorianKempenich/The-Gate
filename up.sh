@@ -55,10 +55,6 @@ check_exist "Certificates base directory" $DIR_CERTIFICATES
 ## End - Check config present on host ###########################
 
 
-# TODO FIX the use of CERT_PATH, replace with $DIR_CERTIFICATES & file relative to that.
-# Right now CERT_PATH represent the folder where `fullchain` and `privkey` directly are.
-# This folder is IN THE DOCKER IMAGE/CONTAINER !!!!
-
 # Start The Gate
 docker run \
        -d \
@@ -67,7 +63,6 @@ docker run \
        --network="host" \
        --restart=always \
        --name=the-gate \
-       -e CERT_PATH="/https/certificates/whatever" \
        -e FILE_CERT_ABS=$FILE_CERT_ABS_IN_CONTAINER \
        -e FILE_PRIVKEY_ABS=$FILE_PRIVKEY_ABS_IN_CONTAINER \
        -v "$DIR_WEBROOT:/https/webroot/" \
