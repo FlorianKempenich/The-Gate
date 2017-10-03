@@ -46,3 +46,15 @@ echo "echo same_basedir \$hey2 \$boom ==> "$(same_basedir $hey2 $boom)
 if [ "$(same_basedir $hey $hey2)" == true ]; then
     echo IT WORKS
 fi
+
+function watch_file_and_exec_cmd {
+    file=$1
+    cmd=${@:2}
+
+    echo "file: $file"
+    echo "cmd: $cmd"
+    echo "cmd: and this is a command"
+}
+
+watch_file_and_exec_cmd ./hello_this_is_a_file and this is a command
+
