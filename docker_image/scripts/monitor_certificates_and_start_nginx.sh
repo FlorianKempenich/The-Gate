@@ -50,11 +50,12 @@ fi
 ########### Now we can since we have the full name of it.
 
 
+# Set certificate location on `services.base.conf`
+sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$FILE_CERT_ABS'|g' /etc/nginx/services.base.conf
+sed -i 's|PRIVKEY_PATH_PLACEHOLDER|'$FILE_PRIVKEY_ABS'|g' /etc/nginx/services.base.conf
+
 # TODO: Remove CERT_PATH hack
 CERT_PATH=$(dirname $FILE_CERT_ABS)
-# Set certificate location on `services.base.conf`
-sed -i 's|CERTIFICATE_PATH_PLACEHOLDER|'$CERT_PATH'|g' /etc/nginx/services.base.conf
-
 # On new certificates, reload `nginx`
 ./on_new_cert.sh nginx -s reload &
 
