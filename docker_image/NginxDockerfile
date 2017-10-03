@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir /scripts
 ADD ./docker_image/scripts/on_new_cert.sh                          /scripts
 ADD ./docker_image/scripts/monitor_certificates_and_start_nginx.sh /scripts
-ADD ./docker_image/scripts/create_fake_certificates.sh             /scripts
 ###########################################################################
 ## END - ADD SCRIPTS ######################################################
 

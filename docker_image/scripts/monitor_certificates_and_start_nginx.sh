@@ -1,5 +1,21 @@
 #!/bin/bash
 
+
+function generate_fake_certificates {
+    path_to_save_certificate=$1
+    path_to_save_privkey=$2
+
+    mkdir -p $(dirname $path_to_save_certificate)
+    mkdir -p $(dirname $path_to_save_privkey)
+
+    openssl req \
+            -subj "/CN=fakedomain.com/O=FakeCompany./C=US" \
+            -new -newkey rsa:2048 -days 365 -nodes -x509 \
+            -keyout $path_to_save_privkey \
+            -out $path_to_save_certificate
+}
+
+
 function same_basedir {
     if [ "$(dirname $1)" == "$(dirname $2)" ]; then
         echo true
@@ -19,9 +35,7 @@ function same_basedir {
 
 if [ ! -e "$FILE_CERT_ABS" ] || [ ! -e "$FILE_PRIVKEY_ABS" ]
 then
-    mkdir -p $(dirname $FILE_CERT_ABS)
-    mkdir -p $(dirname $FILE_PRIVKEY_ABS)
-    ./create_fake_certificates.sh
+    generate_fake_certificates $FILE_CERT_ABS $FILE_PRIVKEY_ABS
 fi
 
 if [ "$(same_basedir $FILE_CERT_ABS $FILE_PRIVKEY_ABS)" == true ]; then

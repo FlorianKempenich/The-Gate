@@ -16,4 +16,4 @@ while true
     fi
   done
 
-echo "Exited the loop !!"
+echo "Error !!! Watcher exited the loop !!"
