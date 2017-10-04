@@ -51,14 +51,15 @@ sed -i 's|PRIVKEY_PATH_PLACEHOLDER|'$FILE_PRIVKEY_ABS'|g' /etc/nginx/services.ba
 
 
 #####################################################################
-## On new certificates, privkey or config ==> reload `nginx`       ##
+## On new config, certificates or privkey ==> reload `nginx`       ##
 #####################################################################
 RELOAD_NGINX_CMD="nginx -s reload"
 
+./watch_file.sh $FILE_CONFIG_ABS $RELOAD_NGINX_CMD &
 ./watch_file.sh $FILE_CERT_ABS $RELOAD_NGINX_CMD &
 ./watch_file.sh $FILE_PRIVKEY_ABS $RELOAD_NGINX_CMD &
 #####################################################################
-## END - On new certificates, privkey or config ==> reload `nginx` ##
+## END - On new config, certificates or privkey ==> reload `nginx` ##
 #####################################################################
 
 

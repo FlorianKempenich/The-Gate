@@ -37,11 +37,16 @@ function check_exist {
 ## Load configuration ###########################################
 # Todo: Maybe make a bit more secure than that .... let's see
 source ./config.env
+
 DIR_CONFIG=$(cleanup_trailing_slash $DIR_CONFIG)
 DIR_WEBROOT=$(cleanup_trailing_slash $DIR_WEBROOT)
 DIR_CERTIFICATES=$(cleanup_trailing_slash $DIR_CERTIFICATES)
 
+DIR_CONFIG_IN_CONTAINER="/etc/nginx/the-gate-services/"
+DIR_WEBROOT_IN_CONTAINER="/https/webroot/"
 DIR_CERTIFICATES_IN_CONTAINER="/https/certificates/"
+
+FILE_CONFIG_ABS_IN_CONTAINER=$(full_path $DIR_CONFIG_IN_CONTAINER "services.conf")
 FILE_CERT_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_CERT)
 FILE_PRIVKEY_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_PRIVKEY)
 ## End - Load configuration #####################################
@@ -63,9 +68,10 @@ docker run \
        --network="host" \
        --restart=always \
        --name=the-gate \
+       -e FILE_CONFIG_ABS=$FILE_CONFIG_ABS_IN_CONTAINER \
        -e FILE_CERT_ABS=$FILE_CERT_ABS_IN_CONTAINER \
        -e FILE_PRIVKEY_ABS=$FILE_PRIVKEY_ABS_IN_CONTAINER \
-       -v "$DIR_WEBROOT:/https/webroot/" \
+       -v "$DIR_WEBROOT:$DIR_WEBROOT_IN_CONTAINER" \
        -v "$DIR_CERTIFICATES:$DIR_CERTIFICATES_IN_CONTAINER" \
-       -v "$DIR_CONFIG:/etc/nginx/the-gate-services/" \
+       -v "$DIR_CONFIG:$DIR_CONFIG_IN_CONTAINER" \
        shockn745/the-gate
