@@ -14,14 +14,6 @@ function generate_fake_certificates {
             -keyout $path_to_save_privkey \
             -out $path_to_save_certificate
 }
-
-function same_basedir {
-    if [ "$(dirname $1)" == "$(dirname $2)" ]; then
-        echo true
-    else
-        echo false
-    fi
-}
 ## END - Utility functions ####################################
 
 
@@ -58,23 +50,16 @@ sed -i 's|PRIVKEY_PATH_PLACEHOLDER|'$FILE_PRIVKEY_ABS'|g' /etc/nginx/services.ba
 ############################################################
 
 
-###############################################
-## On new certificates, reload `nginx`       ##
-###############################################
+#####################################################################
+## On new certificates, privkey or config ==> reload `nginx`       ##
+#####################################################################
 RELOAD_NGINX_CMD="nginx -s reload"
 
-if [ "$(same_basedir $FILE_CERT_ABS $FILE_PRIVKEY_ABS)" == true ]; then
-    # Setup a single watch for both certificate files
-    ./watch_dir.sh $(dirname $FILE_CERT_ABS) $RELOAD_NGINX_CMD &
-else
-    # Setup one watch for each certificate directory
-    ./watch_dir.sh $(dirname $FILE_CERT_ABS) $RELOAD_NGINX_CMD &
-    ./watch_dir.sh $(dirname $FILE_PRIVKEY_ABS) $RELOAD_NGINX_CMD &
-fi
-# TODO: Check if possible to watch file directly instead of watching directory !!
-###############################################
-## END - On new certificates, reload `nginx` ##
-###############################################
+./watch_file.sh $FILE_CERT_ABS $RELOAD_NGINX_CMD &
+./watch_file.sh $FILE_PRIVKEY_ABS $RELOAD_NGINX_CMD &
+#####################################################################
+## END - On new certificates, privkey or config ==> reload `nginx` ##
+#####################################################################
 
 
 #########################
