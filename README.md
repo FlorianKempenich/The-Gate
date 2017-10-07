@@ -383,7 +383,7 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
 **Five simple steps**:
 
 1.    **Configure the location where the certificates _will_ be stored**.  
-     -    By default certificates are stored under `/etc/letsencrypt/live/YOURDOMAIN/`, and are `symlink` to files located in `/etc/letsencrypt/archive/YOURDOMAIN/`  
+      By default certificates are stored under `/etc/letsencrypt/live/YOURDOMAIN/`, and are `symlink` to files located in `/etc/letsencrypt/archive/YOURDOMAIN/`  
           The filenames are `fullchain.pem` and `privkey.pem` for the certificates and private key respectively.  
           **_A correct `.thegateconfig` would be:_**
 
@@ -391,8 +391,7 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
               FILE_CERT=./live/YOURDOMAIN/fullchain.pem
               FILE_PRIVKEY=./live/YOURDOMAIN/privkey.pem
 
-     - Read more about it in the [Let's Encrypt folder structure section](#folder-structure-1)  
-     and in the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
+     > Read more about it in the [Let's Encrypt folder structure section](#folder-structure-1) and on the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
 
 2.    **Delete the temporary certificates**  
       To have a service up and running as quick as possible, **The Gate** generates its own self-signed certificates if it cannot find existing ones.  
