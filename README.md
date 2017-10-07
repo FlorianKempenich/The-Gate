@@ -21,7 +21,7 @@
 It provides a **single `HTTPS` endpoint that redirects to your services.**  
 
 **Securely serve multiple services from one single entrypoint.**
-![The Gate](https://gitlab.com/the_gate/the_gate/raw/master/temp/the_gate.jpg)
+![The Gate](https://raw.githubusercontent.com/ShockN745/The-Gate/master/temp/the_gate.jpg)
 
 ### No complex setup
 
@@ -127,10 +127,9 @@ See the [Configuration Examples](#configuration-examples) for more examples.
 
 ## Setup
 ### Installation
-
 To install **The Gate**, simply run this command:
 ```
-sudo curl -s https://gitlab.com/the_gate/the_gate/raw/master/thegate -o /usr/bin/thegate && sudo chmod +x /usr/bin/thegate
+sudo curl -s https://raw.githubusercontent.com/ShockN745/The-Gate/master/thegate -o /usr/bin/thegate && sudo chmod +x /usr/bin/thegate
 ```
 
 Then **create** a configuration file at `~/.thegateconfig`.  
