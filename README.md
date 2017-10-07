@@ -3,12 +3,10 @@
 ### Https Front-end Proxy with Nginx & Docker
 - [**Simple, secure, configurable**](#simple-secure-configurable)
 - [**Usage**](#usage)
+- [**Create your own rules - `services.conf`**](#create-your-own-rules--servicesconf)
+- [**Setup**](#setup)
     - [Installation](#installation)
     - [Requirements](#requirements)
-        - [`Configuration directory`: The Heart of The Gate |  `services.conf`](#configuration-directory-the-heart-of-the-gate---servicesconf)
-        - [Certificate base directory & Certificate/PrivKey file names](#certificate-base-directory--certificateprivkey-file-names)
-        - [Webroot directory: From where to serve static content.](#webroot-directory-from-where-to-serve-static-content)
-- [**Create your own rules - `services.conf`**](#create-your-own-rules--servicesconf)
 - [**Configuration Examples**](#configuration-examples)
     - [Basic scenario](#basic-scenario)
     - [Certificates from Let's encrypt](#certificates-from-lets-encrypt)
@@ -36,7 +34,7 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
      No problem, **The Gate** generates its own self-signed certificates in case it can not find yours.  
      Your certificates will be loaded the moment they are available
 -    No idea how to provide certificates?  
-     [The Gate - Certificate Daemon](https://gitlab.com/the_gate/the_gate_certificate_daemon) does that for you ;)
+     Check out the dedicated section at the end: [Generating certificates with Let's encrypt and `certbot`](#extra-generating-certificates-with-lets-encrypt-and-certbot)
       
 ### Use your own rules
 
@@ -125,6 +123,7 @@ See the [Configuration Examples](#configuration-examples) for more examples.
 
 ---
 
+## Setup
 ### Installation
 
 To install **The Gate**, simply run this command:
@@ -376,5 +375,45 @@ server {
 
 ## Extra: Generating certificates with **Let's encrypt** and `certbot`
 
-Since all `certbot` needs to generate a certificate is to be able to write a static file that will be served under `yourdomain.com/.well-known`.
+Using **Let's encrypt** and `certbot` it is super easy to get **free `SSL` certificates**.  
+There are multiple ways to use `certbot`, the tool used to request these certificates, but thanks to **The Gate** it is now easier than ever.
 
+**Five simple steps**:
+
+1.    **Configure the location where the certificates _will_ be stored**.  
+     -    Read more about it in the [Let's Encrypt folder structure](#folder-structure-1) section  
+          and in the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
+      
+2.    **Install `certbot`**
+       ```
+       sudo apt-get update
+       sudo apt-get install software-properties-common
+       sudo add-apt-repository ppa:certbot/certbot
+       sudo apt-get update
+       sudo apt-get install certbot 
+       ```
+3.    **Run `certbot` using the `webroot` plugin**
+      ```
+      sudo certbot certonly --webroot \
+           -w WEBROOT_DIRECTORY \
+           -d professionalbeginner.com \
+           -d www.professionalbeginner.com \
+           -d anotherdomain.net
+
+      ```
+      > `DIR_WEBROOT` is the directory to **The Gate** in `.thegateconfig`.  
+      > Read more about the webroot directory in the dedicated section: [Webroot directory: From where to serve static content.](#webroot-directory-from-where-to-serve-static-content)
+4.    **Set a `cron` job to automatically renew the certificates**  
+      Add a `cron` or `systemd` job which runs the following:  
+      ```
+      certbot renew
+      ``` 
+5.    **Enjoy `HTTPS`**  
+      After the certificate generation was completed in step 3, **The Gate** automatically reloaded the new certificates. Also each time the certificates will be renewed, they will be automatically reloaded by **The Gate**.
+
+**You can now access your domains through `HTTPS`** 
+
+
+To learn more about `certbot` and **Let's encrypt**, head over to their website:
+- https://certbot.eff.org/
+- https://letsencrypt.org/
