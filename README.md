@@ -3,7 +3,7 @@
 ### Https Front-end Proxy with Nginx & Docker
 - [**Simple, secure, configurable**](#simple-secure-configurable)
 - [**Usage**](#usage)
-- [**Create your own rules - `services.conf`**](#create-your-own-rules--servicesconf)
+- [**Create your rules - `services.conf`**](#create-your-rules---servicesconf)
 - [**Setup**](#setup)
     - [Installation](#installation)
     - [Requirements](#requirements)
@@ -11,7 +11,6 @@
     - [Basic scenario](#basic-scenario)
     - [Certificates from Let's encrypt](#certificates-from-lets-encrypt)
 - [**Extra:** Generating certificates with Let's encrypt and `certbot`](#extra-generating-certificates-with-lets-encrypt-and-certbot)
-
 
 ## Simple, secure, configurable
 
@@ -66,8 +65,8 @@ You can now edit your redirection rules in the `services.conf`, and update the c
      Same as the certificates, **No restart needed**. Simply edit the rules, and the new rules will be reloaded.
 
 > Before using **The Gate**: 
-> - [Install](#Installation) the lightweight command-line tool
-> - Set up the [requirements](#Requirements).
+> - [Install](#installation) the lightweight command-line tool
+> - Set up the [requirements](#requirements).
 > - Create your [Rules](#create-your-rules---servicesconf)
 >
 > To turn The Gate off: `thegate down`
@@ -95,7 +94,7 @@ But only the services are defined here.
 server {
     include services.base.conf;
 
-    // REST OF THE CONFIGURATION
+    ### REST OF THE CONFIGURATION ###
 }
 ```
 
@@ -168,14 +167,14 @@ See the [Configuration Examples](#configuration-examples) for more examples.
 
 This directory holds the most important configuration part of **The Gate: You Rules**
 
-You **redirection rules** are configured in a file called `services.conf`. To know more about how to setup your redirections rules, check the dedicated section: [Create your own rules | `services.conf`](#create-your-own-rules--servicesconf)  
+You **redirection rules** are configured in a file called `services.conf`. To know more about how to setup your redirections rules, check the dedicated section: [Create your rules - `services.conf`](#create-your-own-rules--servicesconf)  
 **The `configuration directory` is the location where your `services.conf` is located on the Host machine.**
 
 That directory will be mounted on **The Gate**, and every configuration change will be **automatically reloaded**. 
 No need to restart ;)
 
 #### Certificate base directory & Certificate/PrivKey file names
-
+ 
 To serve traffic to your domains via `HTTPS` **The Gate** needs to have access to your **`SSL` certificates and private key.**
 
 The `certificate base directory` is where these two files are located on the **Host** machine.  
