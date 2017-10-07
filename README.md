@@ -1,21 +1,5 @@
 # The Gate
 
-
-
-> ## TODO:
-> It would be nice to have the `up` being a single script. Like we could get it through `wget`
-> The script would install `thegate`, and then:
-> 
-> - `thegate up` 
-> - `thegate down` 
-> 
-> Provide of course un-install script.
-> When doing `thegate up` we would check that the required config directory structure is present.
-
-> ## TIP:
-> When doing part on the `Letsencrypt` exemple.
-> Simply copy paste the result of the `tree` command in a code block. Works wonderfully :)
-
 ### Https Front-end Proxy with Nginx & Docker
 
 ## Simple, secure, configurable
@@ -24,7 +8,7 @@
 It provides a **single `HTTPS` endpoint that redirects to your services.**  
 
 **Securely serve multiple services from one single entrypoint.**
-![The Gate](https://gitlab.com/the_blog/nginx-root-feproxy/raw/master/temp/the_gate.jpg)
+![The Gate](https://gitlab.com/the_gate/the_gate/raw/master/temp/the_gate.jpg)
 
 ### No complex setup
 
@@ -39,7 +23,7 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
      No problem, **The Gate** generates its own self-signed certificates in case it can not find yours.  
      Your certificates will be loaded the moment they are available
 -    No idea how to provide certificates?  
-     [The Gate: Certificate Daemon](http://putlink.com) does that for you ;)
+     [The Gate - Certificate Daemon](https://gitlab.com/the_gate/the_gate_certificate_daemon) does that for you ;)
       
 ### Use your own rules
 
@@ -57,16 +41,20 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 ---
 ## Usage
 
-> Before using **The Gate**: 
-> - [Install]() the lightweight command-line tool
-> - Set up the [requirements]().
+**Once the initial setup is done, start up The Gate:**
 
-**Once the initial setup is done, all you need to do is:**
+```bash
+thegate up
+```
 
-### `thegate up`
 **All configuration is loaded dynamically, no need to restart between each change.**  
-**To turn The Gate off: `thegate down`**
 
+
+> Before using **The Gate**: 
+> - [Install](#Installation) the lightweight command-line tool
+> - Set up the [requirements](#Requirements).
+>
+> To turn The Gate off: `thegate down`
 
 ---
 
@@ -77,12 +65,28 @@ To install **The Gate**, simply run this command:
 sudo curl -s https://gitlab.com/the_gate/the_gate/raw/master/thegate -o /usr/bin/thegate && sudo chmod +x /usr/bin/thegate
 ```
 
-> This will download the executable for `thegate` in `/usr/bin/thegate` and make it executable.
+Then **create** a configuration file at `~/.thegateconfig`.  
+The configuration file is used to specify the location of the requirements on the HOST machine.
 
-To remove **The Gate**: 
+*Example `.thegateconfig` file:*
 ```
-sudo rm -f /usr/bin/thegate
+DIR_CONFIG=/https/config/
+DIR_WEBROOT=/https/webroot/
+DIR_CERTIFICATES=/https/letsencrypt/
+FILE_CERT=./live/professionalbeginner/fullchain.pem
+FILE_PRIVKEY=./live/professionalbeginner/privkey.pem
 ```
+Read about the `.thegateconfig` different variables in the [Requirements](#Requirements) section.
+
+> *Note:*  
+> `.thegateconfig` is the only configuration that is not reloaded on change.
+
+> *Uninstall:*  
+> The install command will download the executable for `thegate` in `/usr/bin/thegate` and make it executable.
+> To remove **The Gate**: 
+> ```
+> sudo rm -f /usr/bin/thegate
+> ```
 
 ### Requirements
 
@@ -120,15 +124,15 @@ The `certificate` and `private key` `filenames` are pretty self-explanatory. The
 > ```
 > Then your configuration should be: 
 > ```
-> certificate_base_dir=/https/certificates
-> certificate_filename=./my_cert.pem
-> privkey_filename=./my_privkey.pem
+> DIR_CERTIFICATES=/https/certificates
+> FILE_CERT=./my_cert.pem
+> FILE_PRIVKEY=./my_privkey.pem
 > ```
 > Another example of a valid configuration for that folder structure would be:
 > ```
-> certificate_base_dir=/https
-> certificate_filename=./certificates/my_cert.pem
-> privkey_filename=./certificates/my_privkey.pem
+> DIR_CERTIFICATES=/https
+> FILE_CERT=./certificates/my_cert.pem
+> FILE_PRIVKEY=./certificates/my_privkey.pem
 > ```
 
 ##### Special Case: Certificates as `Symlink`
