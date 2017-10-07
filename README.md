@@ -383,10 +383,27 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
 **Five simple steps**:
 
 1.    **Configure the location where the certificates _will_ be stored**.  
-     -    Read more about it in the [Let's Encrypt folder structure](#folder-structure-1) section  
+     -    By default certificates are stored under `/etc/letsencrypt/live/YOURDOMAIN/`, and are `symlink` to files located in `/etc/letsencrypt/archive/YOURDOMAIN/`  
+          The filenames are `fullchain.pem` and `privkey.pem` for the certificates and private key respectively.  
+          **_A correct `.thegateconfig` would be:_**
+
+              DIR_CERTIFICATES=/etc/letsencrypt/
+              FILE_CERT=./live/YOURDOMAIN/fullchain.pem
+              FILE_PRIVKEY=./live/YOURDOMAIN/privkey.pem
+
+     -    Read more about it in the [Let's Encrypt folder structure section](#folder-structure-1)  
           and in the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
+
+2.    **Delete the temporary certificates**  
+      To have a service up and running as quick as possible, **The Gate** generates its own self-signed certificates if it cannot find existing ones.  
+      **Before generating new certificates, we need to delete the existing ones.**
+      ```
+      rm -rf /etc/letsencrypt/live/YOURDOMAIN
+      ```
+      > If not, when noticing an existing directory, `certbot` will assume the certificates already exist for this domain and skip the generation.
+
       
-2.    **Install `certbot`**
+3.    **Install `certbot`**
        ```
        sudo apt-get update
        sudo apt-get install software-properties-common
@@ -394,7 +411,7 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
        sudo apt-get update
        sudo apt-get install certbot 
        ```
-3.    **Run `certbot` using the `webroot` plugin**
+4.    **Run `certbot` using the `webroot` plugin**
       ```
       sudo certbot certonly --webroot \
            -w WEBROOT_DIRECTORY \
@@ -405,12 +422,12 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
       ```
       > `DIR_WEBROOT` is the directory to **The Gate** in `.thegateconfig`.  
       > Read more about the webroot directory in the dedicated section: [Webroot directory: From where to serve static content.](#webroot-directory-from-where-to-serve-static-content)
-4.    **Set a `cron` job to automatically renew the certificates**  
+5.    **Set a `cron` job to automatically renew the certificates**  
       Add a `cron` or `systemd` job which runs the following:  
       ```
       certbot renew
       ``` 
-5.    **Enjoy `HTTPS`**  
+6.    **Enjoy `HTTPS`**  
       After the certificate generation was completed in step 3, **The Gate** automatically reloaded the new certificates. Also each time the certificates will be renewed, they will be automatically reloaded by **The Gate**.
 
 **You can now access your domains through `HTTPS`** 
