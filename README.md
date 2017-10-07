@@ -11,8 +11,9 @@
         - [Webroot directory: From where to serve static content.](#webroot-directory-from-where-to-serve-static-content)
 - [**Create your own rules - `services.conf`**](#create-your-own-rules--servicesconf)
 - [**Configuration Examples**](#configuration-examples)
-    - [Service:](#service)
-    - [Complete configuration](#complete-configuration)
+    - [Basic scenario](#basic-scenario)
+    - [Certificates from Let's encrypt](#certificates-from-lets-encrypt)
+
 
 ## Simple, secure, configurable
 
@@ -355,29 +356,3 @@ server {
     }
 }
 ```
-
-
-
----------------------------------------------
-
-
-**Table of Contents**
-
-- The Gate
-    - Simple, secure, configurable
-        - No complex setup
-        - All services are served via `HTTPS`
-        - Use your own rules
-        - The Gate helps you with your certificate challenges
-    - Usage
-        - Installation
-        - Requirements
-            - `Configuration directory`: The Heart of The Gate |  `services.conf`
-            - Certificate base directory & Certificate/PrivKey file names
-                - Special Case: Certificates as `Symlink`
-            - Webroot directory: From where to serve static content.
-    - Create your own rules | `services.conf`
-        - Examples
-            - Service:
-            - Complete configuration
-    - Configuration Examples
