@@ -74,20 +74,19 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 
 To install **The Gate**, simply run this command:
 ```
-do stuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuff
+sudo curl -s https://gitlab.com/the_gate/the_gate/raw/master/thegate -o /usr/bin/thegate && sudo chmod +x /usr/bin/thegate
 ```
 
-> Don't hesitate to take a peak in the script, never install things from the internet without understanding first.   
-> In that case however you'll realise this tiny script is pretty harmless :)
+> This will download the executable for `thegate` in `/usr/bin/thegate` and make it executable.
 
-> And of course, an uninstall script is also provided:
+To remove **The Gate**: 
 ```
-do stuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuff
+sudo rm -f /usr/bin/thegate
 ```
 
 ### Requirements
 
-**The Gate** only needs **4 things**, for the magic to happen:
+**The Gate** only needs **4 elements**, for the magic to happen:
 
 - **`Configuration directory`: The Heart of The Gate** |  `services.conf`
 - **`Certificate base directory`**
@@ -188,7 +187,9 @@ The syntax is the same as a regular `nginx` configuration file.
 But only the services are defined here.
 This file will then be included in the General `nginx` file.
 
-**Each service needs to include `services.base.conf`**
+**/!\ Each service needs to include `services.base.conf` /!\\**  
+**/!\ Each service needs to include `services.base.conf` /!\\**  
+**/!\ Each service needs to include `services.base.conf` /!\\**  
 
     server {
         include services.base.conf;
