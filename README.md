@@ -1,4 +1,6 @@
 [![Docker Build Statu](https://img.shields.io/docker/build/shockn745/the-gate.svg)](https://hub.docker.com/r/shockn745/the-gate/)
+
+## Check the Project Page: [https://shockn745.github.io/The-Gate/](https://shockn745.github.io/The-Gate/)
 # The Gate
 
 ### Https Front-end Proxy with Nginx & Docker
