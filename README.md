@@ -141,8 +141,8 @@ _**Example `.thegateconfig` file:**_
 DIR_CONFIG=/https/config/
 DIR_WEBROOT=/https/webroot/
 DIR_CERTIFICATES=/https/letsencrypt/
-FILE_CERT=./live/professionalbeginner/fullchain.pem
-FILE_PRIVKEY=./live/professionalbeginner/privkey.pem
+FILE_CERT=./live/professionalbeginner.com/fullchain.pem
+FILE_PRIVKEY=./live/professionalbeginner.com/privkey.pem
 ```
 Read about the `.thegateconfig` different variables in the [Requirements](#requirements) section.  
 See the [Configuration Examples](#configuration-examples) for more examples.
@@ -359,8 +359,8 @@ This folder configuration can totally be in a different folder than our **Webroo
 DIR_CONFIG=/thegate/servicesconfig/
 DIR_WEBROOT=/thegate/webroot/
 DIR_CERTIFICATES=/etc/letsencrypt/
-FILE_CERT=./live/professionalbeginner/fullchain.pem
-FILE_PRIVKEY=./live/professionalbeginner/privkey.pem
+FILE_CERT=./live/professionalbeginner.com/fullchain.pem
+FILE_PRIVKEY=./live/professionalbeginner.com/privkey.pem
 ```
 
 #### `services.conf`
