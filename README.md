@@ -391,8 +391,8 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
               FILE_CERT=./live/YOURDOMAIN/fullchain.pem
               FILE_PRIVKEY=./live/YOURDOMAIN/privkey.pem
 
-     -    Read more about it in the [Let's Encrypt folder structure section](#folder-structure-1)  
-          and in the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
+     - Read more about it in the [Let's Encrypt folder structure section](#folder-structure-1)  
+     and in the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
 
 2.    **Delete the temporary certificates**  
       To have a service up and running as quick as possible, **The Gate** generates its own self-signed certificates if it cannot find existing ones.  
