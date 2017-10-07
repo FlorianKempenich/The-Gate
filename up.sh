@@ -1,30 +1,25 @@
 #!/bin/bash
-################
-# DEBUG        #
-# TODO: Remove #
-################
-docker kill the-gate > /dev/null 2>&1
-docker rm the-gate > /dev/null 2>&1
-################
-# END - DEBUG  #
-# TODO: Remove #
-################
 GATECONFIG=$HOME/.thegateconfig
+CONTAINER_NAME=the-gate
 
 function check_config_exist {
+    printf "Checking that The-Gate base configuration exist . . . "
     if [ ! -f $GATECONFIG ]; then
         gateconfig_error "NOT FOUND"
         exit 1;
     fi
+    printf "OK\n"
 }
 function check_variable_set {
     varname=$1
     var=${!varname}
 
+    printf "Checking that configuration \`$varname\` is set . . . "
     if [ -z "$var" ]; then
         gateconfig_error "Variable NOT SET ==> $varname"
         exit 1;
     fi
+    printf "OK\n"
 }
 function gateconfig_error {
     error_message=$1
@@ -48,14 +43,18 @@ function check_exist_on_host {
     #
     # That allow to check if file is present on Docker HOST,
     # even when the HOST is a remote machine.
+    DESCRIPTION=$1
+    FILE=$2
+    printf "Checking that $DESCRIPTION exist on the HOST Machine . . . "
     docker run --rm -v"/:/hostroot" alpine ls /hostroot$2 > /dev/null 2>&1
     if ! [ "$?" == 0 ]; then
         echo ""
-        echo "$1: \`$2\` could not be found."
+        echo "$DESCRIPTION: \`$FILE\` could not be found."
         echo "==> Please check config!"
-        echo ""
+        echo
         exit 1
     fi
+    printf "OK\n"
 }
 
 
@@ -65,7 +64,9 @@ function check_exist_on_host {
 
 ## Load configuration ###########################################
 check_config_exist
+echo "Loading configuration"
 source $GATECONFIG
+echo
 
 check_variable_set "DIR_CONFIG"
 check_variable_set "DIR_WEBROOT"
@@ -86,6 +87,7 @@ FILE_CERT_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_CERT
 FILE_PRIVKEY_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_PRIVKEY)
 ## End - Load configuration #####################################
 
+echo
 
 ## Check config present on host #################################
 check_exist_on_host "Service Configuration directory" $DIR_CONFIG
@@ -94,7 +96,9 @@ check_exist_on_host "Webroot directory" $DIR_WEBROOT
 check_exist_on_host "Certificates base directory" $DIR_CERTIFICATES
 ## End - Check config present on host ###########################
 
+echo
 
+echo "Starting The-Gate on HOST"
 # Start The Gate
 docker run \
        -d \
@@ -102,7 +106,7 @@ docker run \
        -p "443:443" \
        --network="host" \
        --restart=always \
-       --name=the-gate \
+       --name=$CONTAINER_NAME \
        -e FILE_CONFIG_ABS=$FILE_CONFIG_ABS_IN_CONTAINER \
        -e FILE_CERT_ABS=$FILE_CERT_ABS_IN_CONTAINER \
        -e FILE_PRIVKEY_ABS=$FILE_PRIVKEY_ABS_IN_CONTAINER \
@@ -110,3 +114,16 @@ docker run \
        -v "$DIR_CERTIFICATES:$DIR_CERTIFICATES_IN_CONTAINER" \
        -v "$DIR_CONFIG:$DIR_CONFIG_IN_CONTAINER" \
        shockn745/the-gate
+
+if [ $? == '0' ]; then
+    echo " ________________________________ "
+    echo "|                                |"
+    echo "| The-Gate started successfully! |"
+    echo "|________________________________|"
+else
+    echo " ___________________________________________________ "
+    echo "|                                                   |"
+    echo "| A problem happened while trying to start The-Gate |"
+    echo "|___________________________________________________|"
+    echo
+fi
