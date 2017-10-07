@@ -12,7 +12,7 @@
 - [**Configuration Examples**](#configuration-examples)
     - [Basic scenario](#basic-scenario)
     - [Certificates from Let's encrypt](#certificates-from-lets-encrypt)
-- [**Extra:** Generating certificates with Let's encrypt and `certbot`](#generating-certificates-with-lets-encrypt-and-certbot)
+- [**Extra:** Generating certificates with Let's encrypt and `certbot`](#extra-generating-certificates-with-lets-encrypt-and-certbot)
 
 
 ## Simple, secure, configurable
@@ -215,7 +215,7 @@ Static content will be served under `yourdomain.com/.well-known` through `HTTP` 
 >`XXX/.well-known` is the only path accessible through `HTTP`, all other traffic is automatically redirected to `HTTPS` / port `443`
 
 This is especially useful to host **certificates challenges from Let's encrypt / `certbot`**.  
-For more information see: [Generating certificates with **Let's encrypt** and `certbot`](#add-link)
+For more information see: [Generating certificates with **Let's encrypt** and `certbot`](#extra-generating-certificates-with-lets-encrypt-and-certbot)
 
 > **Note:**  
 > Static content at the _base_ of the directory will not be accessible. 
@@ -374,10 +374,7 @@ server {
 }
 ```
 
-
-## Generating certificates with **Let's encrypt** and `certbot`
-For more information see: [Generating certificates with **Let's encrypt** and `certbot`](#add-link)
-
+## Extra: Generating certificates with **Let's encrypt** and `certbot`
 
 Since all `certbot` needs to generate a certificate is to be able to write a static file that will be served under `yourdomain.com/.well-known`.
 
