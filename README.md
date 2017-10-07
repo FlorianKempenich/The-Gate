@@ -1,7 +1,6 @@
 # The Gate
 
 ### Https Front-end Proxy with Nginx & Docker
-**Table of Contents**
 - [**Simple, secure, configurable**](#simple-secure-configurable)
 - [**Usage**](#usage)
     - [Installation](#installation)
@@ -13,6 +12,7 @@
 - [**Configuration Examples**](#configuration-examples)
     - [Basic scenario](#basic-scenario)
     - [Certificates from Let's encrypt](#certificates-from-lets-encrypt)
+- [**Extra:** Generating certificates with Let's encrypt and `certbot`](#generating-certificates-with-lets-encrypt-and-certbot)
 
 
 ## Simple, secure, configurable
@@ -46,7 +46,7 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 
 ### The Gate helps you with your certificate challenges
 
-- It serves a static directory under `www.yourdomain.com/.well-knows/`
+- It serves a static directory under `www.yourdomain.com/.well-known/`
 - No setup, just `up` and that directory is served.
 
 
@@ -206,17 +206,34 @@ The `certificate` and `private key` `filenames` are pretty self-explanatory. The
 ##### Special Case: Certificates as `Symlink`
 In the case the `certificate` and/or `private key` `files` are actually `symlinks`, **both the `symlink` and the `actual file` must be present in the `certificate_base_dir`**
 
-An example of that scenario is presented in the **complete configuration example:**  
-**[An Example: Using Let's encrypt]()**
+An example of that scenario is presented in the **complete configuration example: [Certificates from  Let's encrypt](#certificates-from-lets-encrypt)**
+
 
 #### Webroot directory: From where to serve static content.
-Describe quickly
-And explain how it works in term of "what path the directory actually serves"
---> Remember that we can not serve the `root` directly under well known, because that is not expected by let's encrypt
-The basic explanation is:
+This folder can be _any directory_ on the host machine.  
+Static content will be served under `yourdomain.com/.well-known` through `HTTP` / port `80`.
+>`XXX/.well-known` is the only path accessible through `HTTP`, all other traffic is automatically redirected to `HTTPS` / port `443`
 
-Everything under `YOUR_STATIC_DIRECTORY/.well-known/` will be served under `http://www.yourdomain.com/.well-knows/`
---> Port 80, no https for this one.
+This is especially useful to host **certificates challenges from Let's encrypt / `certbot`**.  
+For more information see: [Generating certificates with **Let's encrypt** and `certbot`](#add-link)
+
+> **Note:**  
+> Static content at the _base_ of the directory will not be accessible. 
+> This is to keep the 1-1 relation between the `webroot` directory, and the `url`.  
+> In other words to make a file available, say `my_file.txt`, under `yourdomain.com/.well-known/my_file.txt`: The file needs to be in a folder `.well-known` inside the `webroot` directory.
+>
+> ```
+> webroot
+> └── well-known
+>     └── my_file.txt
+> ```
+> Additionally, a file placed at the _root_ of `webroot` will **not** be accessible.
+> ```
+> webroot
+> ├── file_not_accessible.txt
+> └── well-known
+>     └── my_file.txt
+> ```
 
 ---------------------------
 
@@ -356,3 +373,11 @@ server {
     }
 }
 ```
+
+
+## Generating certificates with **Let's encrypt** and `certbot`
+For more information see: [Generating certificates with **Let's encrypt** and `certbot`](#add-link)
+
+
+Since all `certbot` needs to generate a certificate is to be able to write a static file that will be served under `yourdomain.com/.well-known`.
+
