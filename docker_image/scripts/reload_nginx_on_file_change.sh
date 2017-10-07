@@ -26,17 +26,18 @@ do
     file_changed=$(inotifywait -r -eCREATE -eMODIFY --format="%f" $dir_to_watch)
 
     if [ $? != '0' ]; then
-        # Error: Retry in 1s, reload before retrying
+        # Error: Wait 1s before reloading and re-trying
         echo "Error: Retrying to watch \`$file_to_watch\` in 1s"
         sleep 1
-        reload_nginx
     elif [ "$file_changed" == "$(basename $file_to_watch)" ]; then
         # Watched file changed, or created (or re-created)
         echo "FILE CHANGED: \`$file_to_watch\`"
-        reload_nginx
     else
-        echo "IGNORING. File changed is not the one watched: file_changed=\`$file_changed\`"
+        echo "FILE CHANGED: File changed is not the one watched: file_changed=\`$file_changed\`"
+        echo "Reloading anyway."
     fi
+
+    reload_nginx
 done
 
 echo "Error !!! Watcher exited the loop !!"
