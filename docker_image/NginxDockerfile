@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 ## ADD SCRIPTS #################################################################
 ################################################################################
 RUN mkdir /scripts
-ADD ./docker_image/scripts/watch_file.sh                               /scripts
+ADD ./docker_image/scripts/reload_nginx_on_file_change.sh              /scripts
 ADD ./docker_image/scripts/start_nginx_and_reload_on_config_changes.sh /scripts
 ################################################################################
 ## END - ADD SCRIPTS ###########################################################
