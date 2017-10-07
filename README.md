@@ -380,7 +380,7 @@ server {
 Using **Let's encrypt** and `certbot` it is super easy to get **free `SSL` certificates**.  
 There are multiple ways to use `certbot`, the tool used to request these certificates, but thanks to **The Gate** it is now easier than ever.
 
-**Five simple steps**:
+**Six simple steps**:
 
 1.    **Configure the location where the certificates _will_ be stored**.  
       By default certificates are stored under `/etc/letsencrypt/live/YOURDOMAIN/`, and are `symlink` to files located in `/etc/letsencrypt/archive/YOURDOMAIN/`  
@@ -390,10 +390,23 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
       DIR_CERTIFICATES=/etc/letsencrypt/
       FILE_CERT=./live/YOURDOMAIN/fullchain.pem
       FILE_PRIVKEY=./live/YOURDOMAIN/privkey.pem
+
+
+      # Also set the rest of the configuration
+      # DIR_CONFIG=Where `service.conf` is located
+      # DIR_WEBROOT=Webroot directory
       ```
       > Read more about it in the [Let's Encrypt folder structure section](#folder-structure-1) and on the [official website of the `certbot` tool](https://certbot.eff.org/docs/using.html#where-are-my-certificates)
 
-2.    **Delete the temporary certificates**  
+2.    **Start up The Gate**  
+      ```
+      thegate up
+      ```
+      **The Gate** will start serving your services, thanks to a self-signed auto-generated certificate. 
+      But more importantly, **The Gate** will serve static content on the `DIR_WEBROOT`.  
+      The `DIR_WEBROOT` will be used by `certbot` to place the certificates challenges.
+
+3.    **Delete the temporary certificates**  
       To have a service up and running as quick as possible, **The Gate** generates its own self-signed certificates if it cannot find existing ones.  
       **Before generating new certificates, we need to delete the existing ones.**
       ```
@@ -402,7 +415,7 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
       > If not, when noticing an existing directory, `certbot` will assume the certificates already exist for this domain and skip the generation.
 
       
-3.    **Install `certbot`**
+4.    **Install `certbot`**
        ```
        sudo apt-get update
        sudo apt-get install software-properties-common
@@ -410,10 +423,10 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
        sudo apt-get update
        sudo apt-get install certbot 
        ```
-4.    **Run `certbot` using the `webroot` plugin**
+5.    **Run `certbot` using the `webroot` plugin**
       ```
       sudo certbot certonly --webroot \
-           -w WEBROOT_DIRECTORY \
+           -w DIR_WEBROOT \
            -d professionalbeginner.com \
            -d www.professionalbeginner.com \
            -d anotherdomain.net
@@ -421,12 +434,12 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
       ```
       > `DIR_WEBROOT` is the directory to **The Gate** in `.thegateconfig`.  
       > Read more about the webroot directory in the dedicated section: [Webroot directory: From where to serve static content.](#webroot-directory-from-where-to-serve-static-content)
-5.    **Set a `cron` job to automatically renew the certificates**  
+6.    **Set a `cron` job to automatically renew the certificates**  
       Add a `cron` or `systemd` job which runs the following:  
       ```
       certbot renew
       ``` 
-6.    **Enjoy `HTTPS`**  
+7.    **Enjoy `HTTPS`**  
       After the certificate generation was completed in step 3, **The Gate** automatically reloaded the new certificates. Also each time the certificates will be renewed, they will be automatically reloaded by **The Gate**.
 
 **You can now access your domains through `HTTPS`** 
