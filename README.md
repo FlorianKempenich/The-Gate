@@ -141,7 +141,7 @@ DIR_CERTIFICATES=/https/letsencrypt/
 FILE_CERT=./live/professionalbeginner/fullchain.pem
 FILE_PRIVKEY=./live/professionalbeginner/privkey.pem
 ```
-Read about the `.thegateconfig` different variables in the [Requirements](#Requirements) section.  
+Read about the `.thegateconfig` different variables in the [Requirements](#requirements) section.  
 See the [Configuration Examples](#configuration-examples) for more examples.
 
 > *Note:*  
@@ -167,7 +167,7 @@ See the [Configuration Examples](#configuration-examples) for more examples.
 
 This directory holds the most important configuration part of **The Gate: You Rules**
 
-You **redirection rules** are configured in a file called `services.conf`. To know more about how to setup your redirections rules, check the dedicated section: [Create your rules - `services.conf`](#create-your-own-rules--servicesconf)  
+You **redirection rules** are configured in a file called `services.conf`. To know more about how to setup your redirections rules, check the dedicated section: [Create your rules - `services.conf`(#create-your-rules---servicesconf)  
 **The `configuration directory` is the location where your `services.conf` is located on the Host machine.**
 
 That directory will be mounted on **The Gate**, and every configuration change will be **automatically reloaded**. 
@@ -414,5 +414,5 @@ There are multiple ways to use `certbot`, the tool used to request these certifi
 
 
 To learn more about `certbot` and **Let's encrypt**, head over to their website:
-- https://certbot.eff.org/
-- https://letsencrypt.org/
+- [https://certbot.eff.org/](https://certbot.eff.org/)
+- [https://letsencrypt.org/](https://letsencrypt.org/)
