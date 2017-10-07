@@ -1,6 +1,18 @@
 # The Gate
 
 ### Https Front-end Proxy with Nginx & Docker
+**Table of Contents**
+- [**Simple, secure, configurable**](#simple-secure-configurable)
+- [**Usage**](#usage)
+    - [Installation](#installation)
+    - [Requirements](#requirements)
+        - [`Configuration directory`: The Heart of The Gate |  `services.conf`](#configuration-directory-the-heart-of-the-gate---servicesconf)
+        - [Certificate base directory & Certificate/PrivKey file names](#certificate-base-directory--certificateprivkey-file-names)
+        - [Webroot directory: From where to serve static content.](#webroot-directory-from-where-to-serve-static-content)
+- [**Create your own rules - `services.conf`**](#create-your-own-rules--servicesconf)
+- [**Configuration Examples**](#configuration-examples)
+    - [Service:](#service)
+    - [Complete configuration](#complete-configuration)
 
 ## Simple, secure, configurable
 
@@ -47,14 +59,68 @@ It provides a **single `HTTPS` endpoint that redirects to your services.**
 thegate up
 ```
 
-**All configuration is loaded dynamically, no need to restart between each change.**  
-
+You can now edit your redirection rules in the `services.conf`, and update the certificates.  
+-    **Certificates:**  
+     If no certificates were available at the given location, **The Gate** generates it own temporary self-signed certificates.
+     Simply override them with your own, and **The Gate** will load them up. **No restart needed**.
+-    **`services.conf`:**  
+     Same as the certificates, **No restart needed**. Simply edit the rules, and the new rules will be reloaded.
 
 > Before using **The Gate**: 
 > - [Install](#Installation) the lightweight command-line tool
 > - Set up the [requirements](#Requirements).
+> - Create your [Rules](#create-your-rules---servicesconf)
 >
 > To turn The Gate off: `thegate down`
+
+
+## Create your rules - `services.conf`
+
+The main configuration of your services is in the `services.conf` file.
+
+**This file defines:**
+
+* All the **Services** served by `The Gate`
+* The **Rules** on how to serve them
+
+The syntax is the same as a regular `nginx` configuration file.
+But only the services are defined here.
+
+> This file will then be automatically included in the base `nginx` file.
+
+**/!\ Each service needs to include `services.base.conf` /!\\**  
+**/!\ Each service needs to include `services.base.conf` /!\\**  
+**/!\ Each service needs to include `services.base.conf` /!\\**  
+
+```nginx
+server {
+    include services.base.conf;
+
+    // REST OF THE CONFIGURATION
+}
+```
+
+`services.base.conf` already includes everything needed for a `https` connection.
+```nginx
+listen 443 ssl;
+ssl on;
+ssl_certificate PATH_TO_YOUR_CERTIFICATE;
+ssl_certificate_key PATH_TO_YOUR_PRIVKEY;
+```
+
+_**Example `services.conf` file:**_
+```nginx
+server {
+    include services.base.conf;
+    server_name professionalbeginner.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:2000;
+    }
+}
+```
+
+See the [Configuration Examples](#configuration-examples) for more examples.
 
 ---
 
@@ -68,7 +134,7 @@ sudo curl -s https://gitlab.com/the_gate/the_gate/raw/master/thegate -o /usr/bin
 Then **create** a configuration file at `~/.thegateconfig`.  
 The configuration file is used to specify the location of the requirements on the HOST machine.
 
-*Example `.thegateconfig` file:*
+_**Example `.thegateconfig` file:**_
 ```
 DIR_CONFIG=/https/config/
 DIR_WEBROOT=/https/webroot/
@@ -76,7 +142,8 @@ DIR_CERTIFICATES=/https/letsencrypt/
 FILE_CERT=./live/professionalbeginner/fullchain.pem
 FILE_PRIVKEY=./live/professionalbeginner/privkey.pem
 ```
-Read about the `.thegateconfig` different variables in the [Requirements](#Requirements) section.
+Read about the `.thegateconfig` different variables in the [Requirements](#Requirements) section.  
+See the [Configuration Examples](#configuration-examples) for more examples.
 
 > *Note:*  
 > `.thegateconfig` is the only configuration that is not reloaded on change.
@@ -150,154 +217,167 @@ The basic explanation is:
 Everything under `YOUR_STATIC_DIRECTORY/.well-known/` will be served under `http://www.yourdomain.com/.well-knows/`
 --> Port 80, no https for this one.
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+---------------------------
+
+## Configuration Examples
+### Basic scenario
+
+2 web application running on different ports.  
+We want to expose each application under its own domain name.
+
+```
+- professionalbeginner.com  --REDIRECT-TO-->  Application running on port `1234`
+- floriankempenich.com      --REDIRECT-TO-->  Application running on port `8888`
+```
+
+Certficates are static and stored in the same folder.
+
+#### Folder structure
+```
+https
+├── certificates
+│   ├── my_certificate.pem
+│   └── my_private_key.pem
+├── servicesconfig
+│   └── services.conf
+└── webroot
+```
+
+
+#### `.thegateconfig`
+```
+DIR_CONFIG=/https/servicesconfig/
+DIR_WEBROOT=/https/webroot/
+DIR_CERTIFICATES=/https/certificates/
+FILE_CERT=my_certificate.pem
+FILE_PRIVKEY=my_private_key.pem
+```
+
+#### `services.conf`
+```nginx
+server {
+    include services.base.conf;
+    server_name professionalbeginner.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:1234;
+    }
+}
+
+server {
+    include services.base.conf;
+    server_name floriankempenich.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8888;
+    }
+}
+```
+
+
+### Certificates from Let's encrypt 
+
+In this scenario, only one web app is running.  
+We want to expose it using **certificates generated by Let's encrypt.**
+
+```
+professionalbeginner.com  --REDIRECT-TO-->  Application running on port `1234`
+```
+
+
+#### Folder structure
+
+Certificates from **Let's encrypt** need to be renewed every 90 days.  
+To facilitate that, **Let's encrypt** uses a particular folder structure and certificates are accessed through `symlinks`.
+
+>**Let's encrypt folder structure:**
+```
+/etc/letsencrypt
+├── accounts
+│   └── acme-v01.api.letsencrypt.org
+│       └── directory
+│           └── cb3660c15be23b89e048d04b0530379e
+│               ├── meta.json
+│               ├── private_key.json
+│               └── regr.json
+├── archive
+│   └── professionalbeginner.com
+│       ├── cert1.pem
+│       ├── chain1.pem
+│       ├── fullchain1.pem
+│       └── privkey1.pem
+├── csr
+│   └── 0000_csr-certbot.pem
+├── keys
+│   └── 0000_key-certbot.pem
+├── live
+│   └── professionalbeginner.com
+│       ├── cert.pem -> ../../archive/professionalbeginner.com/cert1.pem
+│       ├── chain.pem -> ../../archive/professionalbeginner.com/chain1.pem
+│       ├── fullchain.pem -> ../../archive/professionalbeginner.com/fullchain1.pem
+│       ├── privkey.pem -> ../../archive/professionalbeginner.com/privkey1.pem
+│       └── README
+└── renewal
+    └── professionalbeginner.com.conf
+```
+
+This folder configuration can totally be in a different folder than our **Webroot** and **Service configuration** folders.
+```
+/thegate
+├── servicesconfig
+│   └── services.conf
+└── webroot
+
+/etc/letsencrypt
+|...
+```
+
+
+#### `.thegateconfig`
+> Remember, the only constraint when using `symlink`. Both the `symlink` **and** the `file` must be contained in the `DIR_CERTIFICATES` base directory.
+
+```
+DIR_CONFIG=/thegate/servicesconfig/
+DIR_WEBROOT=/thegate/webroot/
+DIR_CERTIFICATES=/etc/letsencrypt/
+FILE_CERT=./live/professionalbeginner/fullchain.pem
+FILE_PRIVKEY=./live/professionalbeginner/privkey.pem
+```
+
+#### `services.conf`
+```nginx
+server {
+    include services.base.conf;
+    server_name professionalbeginner.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:1234;
+    }
+}
+```
+
+
+
+---------------------------------------------
+
+
 **Table of Contents**
 
 - The Gate
-    - -
     - Simple, secure, configurable
         - No complex setup
         - All services are served via `HTTPS`
         - Use your own rules
-        - The Gate helps with your certificate challenges
+        - The Gate helps you with your certificate challenges
     - Usage
-        - `thegate up`
         - Installation
         - Requirements
             - `Configuration directory`: The Heart of The Gate |  `services.conf`
             - Certificate base directory & Certificate/PrivKey file names
                 - Special Case: Certificates as `Symlink`
             - Webroot directory: From where to serve static content.
-        - Create your own rules | `services.conf`
+    - Create your own rules | `services.conf`
         - Examples
             - Service:
             - Complete configuration
     - Configuration Examples
-
-<!-- markdown-toc end -->
-
-
-
-### Create your own rules | `services.conf`
-
-The main configuration of your services is in the `services.conf` file.
-
-**This file defines:**
-
-* All the **Services** served by `The Gate`
-* The **Rules** on how to serve them
-
-The syntax is the same as a regular `nginx` configuration file.
-But only the services are defined here.
-This file will then be included in the General `nginx` file.
-
-**/!\ Each service needs to include `services.base.conf` /!\\**  
-**/!\ Each service needs to include `services.base.conf` /!\\**  
-**/!\ Each service needs to include `services.base.conf` /!\\**  
-
-    server {
-        include services.base.conf;
-
-        // REST OF THE CONFIGURATION
-    }
-
-`services.base.conf` already includes everything needed for a `https` connection.
-
-    listen 443 ssl;
-    ssl on;
-    ssl_certificate PATH_TO_CERTIFICATES/fullchain.pem;
-    ssl_certificate_key PATH_TO_CERTIFICATES/privkey.pem;
-
-### Examples
-#### Service:
-
-    server {
-        include services.base.conf;
-        server_name professionalbeginner.com;
-
-        location / {
-            proxy_pass http://127.0.0.1:2000;
-        }
-    }
-
-#### Complete configuration
-An example of a working `services.conf` is available in the repository.
-
-
-
----------------------------------------------
-## Configuration Examples
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----------------------------------------------
-# OLD  OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD
-# Nginx as a Front-End Proxy
-
-This project offers a out of the box pre-configured `nginx` server running in a docker image.
-Simply customise the `nginx.conf` to redirect to the correct services
-
-
-## Usage
-- Customise the `nginx.conf`
-- Run `docker-compose up --build -d`
-
-To stop the `nginx`: `docker-compose down`
-
-
-# TODO
-# TODO
-## Make explicit that this is specifically targeted for 1 use case:
-### Certificates Generated by `Letsencrypt`
-### One certificate for all domains served by this `nginx`
-# TODO
-# TODO
-
-
-## Use HTTPS
-
-It is possible and very simple to use `HTTPS` thanks to this project:
-- [Certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon)
-
-### Initial setup
-As explained in the `README.md` of the [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon).
-We need to serve static content.
-
-**To do so:**
-- Create a directory.
-  - For example in `/https/webroot`
-- Serve this directory under `DOMAIN/.well-known/`
-  - In the `nginx.conf`:
-  ```
-    ## SSL Security #####################################
-    server {
-        listen 80;
-
-        # Serve static content (for the certificate challenge)
-        location /.well-known/ {
-            root /https/webroot/;
-        }
-    }
-    ## END - SSL Security ###############################
-  ```
-
-### Generate the certificate & auto-renew
-Follow the instructions on the [certificate generation project](https://gitlab.com/the_blog/letsencrypt-docker-daemon).
-
- 
