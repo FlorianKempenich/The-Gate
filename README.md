@@ -1,6 +1,6 @@
 [![Docker Build Statu](https://img.shields.io/docker/build/shockn745/the-gate.svg)](https://hub.docker.com/r/shockn745/the-gate/)
 
-## Check the Project Page: [https://shockn745.github.io/The-Gate/](https://shockn745.github.io/The-Gate/)
+## Check the Project Page: [https://FlorianKempenich.github.io/The-Gate/](https://floriankempenich.github.io/The-Gate/)
 # The Gate
 
 ### Https Front-end Proxy with Nginx & Docker
@@ -21,7 +21,7 @@
 It provides a **single `HTTPS` endpoint that redirects to your services.**  
 
 **Securely serve multiple services from one single entrypoint.**
-![The Gate](https://raw.githubusercontent.com/ShockN745/The-Gate/master/temp/the_gate.jpg)
+![The Gate](https://raw.githubusercontent.com/FlorianKempenich/The-Gate/master/temp/the_gate.jpg)
 
 ### No complex setup
 
@@ -129,7 +129,7 @@ See the [Configuration Examples](#configuration-examples) for more examples.
 ### Installation
 To install **The Gate**, simply run this command:
 ```
-sudo curl -s https://raw.githubusercontent.com/ShockN745/The-Gate/master/thegate -o /usr/bin/thegate && sudo chmod +x /usr/bin/thegate
+sudo curl -s https://raw.githubusercontent.com/FlorianKempenich/The-Gate/master/thegate -o /usr/bin/thegate && sudo chmod +x /usr/bin/thegate
 ```
 
 Then **create** a configuration file at `~/.thegateconfig`.  
