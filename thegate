@@ -123,7 +123,7 @@ function up {
         -v "$DIR_WEBROOT:$DIR_WEBROOT_IN_CONTAINER" \
         -v "$DIR_CERTIFICATES:$DIR_CERTIFICATES_IN_CONTAINER" \
         -v "$DIR_CONFIG:$DIR_CONFIG_IN_CONTAINER" \
-        shockn745/the-gate
+        floriankempenich/the-gate
 
     if [ $? == '0' ]; then
         echo " ________________________________ "
