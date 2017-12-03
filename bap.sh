@@ -1,8 +1,8 @@
 #!/bin/bash
 
-docker build -t shockn745/the-gate .
+docker build -t floriankempenich/the-gate .
 
 if [ "$1" == "p" ]; then
-  docker push shockn745/the-gate
+  docker push floriankempenich/the-gate
 fi
 
