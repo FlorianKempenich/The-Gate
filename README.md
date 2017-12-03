@@ -1,4 +1,4 @@
-[![Docker Build Statu](https://img.shields.io/docker/build/floriankempenich/the-gate.svg)](https://hub.docker.com/r/floriankempenich/the-gate/)
+[![Docker Build Status](https://img.shields.io/docker/build/floriankempenich/the-gate.svg)](https://hub.docker.com/r/floriankempenich/the-gate/)
 
 ## Check the Project Page: [https://FlorianKempenich.github.io/The-Gate/](https://floriankempenich.github.io/The-Gate/)
 # The Gate
