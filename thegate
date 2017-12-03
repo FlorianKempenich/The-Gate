@@ -172,6 +172,20 @@ function down {
 ##########
 ## Main ##
 ##########
+function check_docker_installed {
+  docker version >/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    echo
+    echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
+    echo "The Gate requires \`docker\`!"
+    echo "Please ensure \`docker\` is installed"
+    echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
+    echo
+    exit 1
+  fi
+}
+
+check_docker_installed
 if [ "$1" == "up" ]; then
     up
 elif [ "$1" == "down" ]; then
