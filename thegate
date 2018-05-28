@@ -2,8 +2,9 @@
 ###################
 ## Global config ##
 ###################
-GATECONFIG=$HOME/.thegateconfig
 CONTAINER_NAME=the-gate
+GATE_SERVICES_CONFIG=/thegate/config/services.conf
+GATE_DOCKER_IMAGE=floriankempenich/the-gate:debug
 #########################
 ## END - Global config ##
 #########################
@@ -14,25 +15,25 @@ CONTAINER_NAME=the-gate
 ## UP ##
 ########
 ### Utilities functions ###
-function check_config_exist {
-    printf "Checking that The-Gate base configuration exist . . . "
-    if [ ! -f $GATECONFIG ]; then
+function check_service_config_exist {
+    printf "Checking that The-Gate service configuration exist . . . "
+    if [ ! -f $GATE_SERVICES_CONFIG ]; then
         gateconfig_error "NOT FOUND"
         exit 1;
     fi
     printf "OK\n"
 }
-function check_variable_set {
-    varname=$1
-    var=${!varname}
-
-    printf "Checking that configuration \`$varname\` is set . . . "
-    if [ -z "$var" ]; then
-        gateconfig_error "Variable NOT SET ==> $varname"
-        exit 1;
-    fi
-    printf "OK\n"
-}
+# function check_variable_set {
+#     varname=$1
+#     var=${!varname}
+#
+#     printf "Checking that configuration \`$varname\` is set . . . "
+#     if [ -z "$var" ]; then
+#         gateconfig_error "Variable NOT SET ==> $varname"
+#         exit 1;
+#     fi
+#     printf "OK\n"
+# }
 function gateconfig_error {
     error_message=$1
     echo "The base configuration for The-Gate could not be found."
@@ -50,63 +51,42 @@ function full_path {
     echo $(cleanup_trailing_slash $1)/$(cleanup_leading_dotslash $2)
 }
 
-function check_exist_on_host {
-    # Mounts the root on a docker image, and does the check on the image.
-    #
-    # That allow to check if file is present on Docker HOST,
-    # even when the HOST is a remote machine.
-    DESCRIPTION=$1
-    FILE=$2
-    printf "Checking that $DESCRIPTION exist on the HOST Machine . . . "
-    docker run --rm -v"/:/hostroot" alpine ls /hostroot$2 > /dev/null 2>&1
-    if ! [ "$?" == 0 ]; then
-        echo ""
-        echo "$DESCRIPTION: \`$FILE\` could not be found."
-        echo "==> Please check config! or Create the missing Directory/File!"
-        echo
-        exit 1
-    fi
-    printf "OK\n"
-}
+# function check_exist_on_host {
+#     # Mounts the root on a docker image, and does the check on the image.
+#     #
+#     # That allow to check if file is present on Docker HOST,
+#     # even when the HOST is a remote machine.
+#     DESCRIPTION=$1
+#     FILE=$2
+#     printf "Checking that $DESCRIPTION exist on the HOST Machine . . . "
+#     docker run --rm -v"/:/hostroot" alpine ls /hostroot$2 > /dev/null 2>&1
+#     if ! [ "$?" == 0 ]; then
+#         echo ""
+#         echo "$DESCRIPTION: \`$FILE\` could not be found."
+#         echo "==> Please check config! or Create the missing Directory/File!"
+#         echo
+#         exit 1
+#     fi
+#     printf "OK\n"
+# }
 ### END - Utilities functions ###
 
 ### Main UP ###
 ## Load configuration ###########################################
 function up {
-    check_config_exist
-    echo "Loading configuration"
-    source $GATECONFIG
-    echo
 
-    check_variable_set "DIR_CONFIG"
-    check_variable_set "DIR_WEBROOT"
-    check_variable_set "DIR_CERTIFICATES"
-    check_variable_set "FILE_CERT"
-    check_variable_set "FILE_PRIVKEY"
+    # TODO might wanna use the "on host" trick here for phase 4
+    check_service_config_exist
 
-    DIR_CONFIG=$(cleanup_trailing_slash $DIR_CONFIG)
-    DIR_WEBROOT=$(cleanup_trailing_slash $DIR_WEBROOT)
-    DIR_CERTIFICATES=$(cleanup_trailing_slash $DIR_CERTIFICATES)
+    CONFIG_DIR=/thegate/config
+    CONFIG_DIR_IN_GATE=/etc/nginx/the-gate-services
 
-    DIR_CONFIG_IN_CONTAINER="/etc/nginx/the-gate-services/"
-    DIR_WEBROOT_IN_CONTAINER="/https/webroot/"
-    DIR_CERTIFICATES_IN_CONTAINER="/https/certificates/"
+    LETSENCRYPT_CERT_NAME=thegate
+    LETSENCRYPT_DIR=/etc/letsencrypt
+    LETSENCRYPT_DIR_IN_GATE=/etc/letsencrypt
 
-    FILE_CONFIG_ABS_IN_CONTAINER=$(full_path $DIR_CONFIG_IN_CONTAINER "services.conf")
-    FILE_CERT_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_CERT)
-    FILE_PRIVKEY_ABS_IN_CONTAINER=$(full_path $DIR_CERTIFICATES_IN_CONTAINER $FILE_PRIVKEY)
-    ## End - Load configuration #####################################
-
-    echo
-
-    ## Check config present on host #################################
-    check_exist_on_host "Service Configuration directory" $DIR_CONFIG
-    check_exist_on_host "\`services.conf\`" $DIR_CONFIG/services.conf
-    check_exist_on_host "Webroot directory" $DIR_WEBROOT
-    check_exist_on_host "Certificates base directory" $DIR_CERTIFICATES
-    ## End - Check config present on host ###########################
-
-    echo
+    WEBROOT_DIR=/thegate/webroot
+    WEBROOT_DIR_IN_GATE=/thegate/webroot
 
     echo "Starting The-Gate on HOST"
     # Start The Gate
@@ -117,13 +97,17 @@ function up {
         --network="host" \
         --restart=always \
         --name=$CONTAINER_NAME \
-        -e FILE_CONFIG_ABS=$FILE_CONFIG_ABS_IN_CONTAINER \
-        -e FILE_CERT_ABS=$FILE_CERT_ABS_IN_CONTAINER \
-        -e FILE_PRIVKEY_ABS=$FILE_PRIVKEY_ABS_IN_CONTAINER \
-        -v "$DIR_WEBROOT:$DIR_WEBROOT_IN_CONTAINER" \
-        -v "$DIR_CERTIFICATES:$DIR_CERTIFICATES_IN_CONTAINER" \
-        -v "$DIR_CONFIG:$DIR_CONFIG_IN_CONTAINER" \
-        floriankempenich/the-gate
+        \
+        -e LETSENCRYPT_CERT_NAME=$LETSENCRYPT_CERT_NAME \
+        -e CONFIG_DIR_IN_GATE=$CONFIG_DIR_IN_GATE \
+        -e LETSENCRYPT_DIR_IN_GATE=$LETSENCRYPT_DIR_IN_GATE \
+        -e WEBROOT_DIR_IN_GATE=$WEBROOT_DIR_IN_GATE \
+        \
+        -v $LETSENCRYPT_DIR:$LETSENCRYPT_DIR_IN_GATE \
+        -v $CONFIG_DIR:$CONFIG_DIR_IN_GATE \
+        -v $WEBROOT_DIR:$WEBROOT_DIR_IN_GATE \
+        \
+        $GATE_DOCKER_IMAGE
 
     if [ $? == '0' ]; then
         echo " ________________________________ "
@@ -173,19 +157,39 @@ function down {
 ## Main ##
 ##########
 function check_docker_installed {
-  docker version >/dev/null 2>&1
-  if [ $? -ne 0 ]; then
-    echo
-    echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
-    echo "The Gate requires \`docker\`!"
-    echo "Please ensure \`docker\` is installed"
-    echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
-    echo
-    exit 1
-  fi
+    docker version >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      echo
+      echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
+      echo "The Gate requires \`docker\`!"
+      echo "Please ensure \`docker\` is installed"
+      echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
+      echo
+      exit 1
+    fi
+}
+function check_running_as_root {
+    if [[ $EUID -ne 0 ]]; then
+        echo
+        echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
+        echo "The Gate must be run as root!"
+        echo "Please run as root, or use sudo"
+        echo "/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\"
+        echo
+        exit 1
+    fi
+}
+function create_directory_structure_if_not_exist {
+    # TODO: Do this on remote machine for phase 4
+    mkdir -p /thegate/webroot
+    mkdir -p /thegate/config
+    touch /thegate/config/services.conf
 }
 
 check_docker_installed
+check_running_as_root
+create_directory_structure_if_not_exist
+
 if [ "$1" == "up" ]; then
     up
 elif [ "$1" == "down" ]; then
