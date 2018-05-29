@@ -5,10 +5,59 @@
 CONTAINER_NAME=the-gate
 GATE_SERVICES_CONFIG=/thegate/config/services.conf
 GATE_DOCKER_IMAGE=floriankempenich/the-gate:debug
+
+
+# Gate config
+CONFIG_DIR=/thegate/config
+CONFIG_DIR_IN_GATE=/etc/nginx/the-gate-services
+
+LETSENCRYPT_CERT_NAME=thegate
+LETSENCRYPT_DIR=/etc/letsencrypt
+LETSENCRYPT_DIR_IN_GATE=/etc/letsencrypt
+
+WEBROOT_DIR=/thegate/webroot
+WEBROOT_DIR_IN_GATE=/thegate/webroot
+# Gate config
+
 #########################
 ## END - Global config ##
 #########################
 
+function cert-gen {
+    # TODO: Hardcode cert-gen for now.
+    # Offer help (and completion?) when implementing the python cli.
+    domain="the-sandbox.access.ly"
+
+    TMP_NGINX_CONTAINER=temp-nginx-for-certificate-generation
+
+    docker run \
+           --rm \
+           --name $TMP_NGINX_CONTAINER \
+           -v $WEBROOT_DIR:/usr/share/nginx/html:ro \
+           -p 80:80 \
+           -d nginx
+
+    # TODO: Remove --dry-run
+    CERTBOT_CMD="certonly \
+            --webroot -w $WEBROOT_DIR \
+            --cert-name $LETSENCRYPT_CERT_NAME \
+            --dry-run \
+            -d $domain"
+
+    docker run \
+           -it \
+           --rm \
+           --name certbot \
+           -v "/etc/letsencrypt:/etc/letsencrypt" \
+           -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+           -v $WEBROOT_DIR:$WEBROOT_DIR \
+           certbot/certbot $CERTBOT_CMD
+
+    docker kill $TMP_NGINX_CONTAINER
+}
+function cert-renew {
+    echo Not implemented
+}
 
 
 ########
@@ -77,16 +126,6 @@ function up {
 
     # TODO might wanna use the "on host" trick here for phase 4
     check_service_config_exist
-
-    CONFIG_DIR=/thegate/config
-    CONFIG_DIR_IN_GATE=/etc/nginx/the-gate-services
-
-    LETSENCRYPT_CERT_NAME=thegate
-    LETSENCRYPT_DIR=/etc/letsencrypt
-    LETSENCRYPT_DIR_IN_GATE=/etc/letsencrypt
-
-    WEBROOT_DIR=/thegate/webroot
-    WEBROOT_DIR_IN_GATE=/thegate/webroot
 
     echo "Starting The-Gate on HOST"
     # Start The Gate
@@ -194,7 +233,17 @@ if [ "$1" == "up" ]; then
     up
 elif [ "$1" == "down" ]; then
     down
+elif [ "$1" == "cert" ]; then
+    if [ "$2" == "gen" ]; then
+        cert-gen
+    elif [ "$2" == "renew" ]; then
+        cert-renew
+    else
+        #TODO: Put option here
+        echo "put help for 'cert' command here"
+    fi
 else
+    # TODO: Update help with cert commands
     echo "Please select an option: \`up\` or \`down\`"
     echo
     echo "    \`thegate up\`   => Turn on The-Gate, and make your services securely available to the world!"
