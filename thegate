@@ -35,7 +35,8 @@ function cert-gen {
            --name $TMP_NGINX_CONTAINER \
            -v $WEBROOT_DIR:/usr/share/nginx/html:ro \
            -p 80:80 \
-           -d nginx
+           -d \
+           nginx
 
     # TODO: Remove --dry-run
     CERTBOT_CMD="certonly \
@@ -56,7 +57,18 @@ function cert-gen {
     docker kill $TMP_NGINX_CONTAINER
 }
 function cert-renew {
-    echo Not implemented
+    # TODO: Ensure thegate is up + remove dry run
+
+    CERTBOT_CMD="renew --dry-run"
+
+    docker run \
+           -it \
+           --rm \
+           --name certbot \
+           -v "/etc/letsencrypt:/etc/letsencrypt" \
+           -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+           -v $WEBROOT_DIR:$WEBROOT_DIR \
+           certbot/certbot $CERTBOT_CMD
 }
 
 
@@ -135,6 +147,7 @@ function up {
         -p "443:443" \
         --network="host" \
         --restart=always \
+        --rm \
         --name=$CONTAINER_NAME \
         \
         -e LETSENCRYPT_CERT_NAME=$LETSENCRYPT_CERT_NAME \
