@@ -34,5 +34,5 @@ def test_accept_tos__invalid_email__none(validator):
     with pytest.raises(RuntimeError):
         validator.is_valid(None, agree_tos=True)
 
-    with pytest.raises(RuntimeError) as exception:
+    with pytest.raises(RuntimeError):
         validator.is_valid(None, agree_tos=False)
