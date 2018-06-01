@@ -37,7 +37,7 @@ class UnrelatedClass():
 ###################################################
 
 
-#@pytest.mark.skip
+@pytest.mark.skip
 class TestDebugClasses:
     def test_without_mocking(self):
         child = ChildClass()
@@ -51,7 +51,7 @@ class TestDebugClasses:
             child.call_the_exploding_of_mother_with_args()
 
 
-    @patch('tests.test_debug.MotherClass.exploding_method')
+    @patch('tests.test_showcase_mocks.MotherClass.exploding_method')
     def test_mocking_exploding(self, exploding_method):
         exploding_method.return_value = 'moooooooocked'
         child = ChildClass()
