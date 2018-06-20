@@ -34,6 +34,14 @@ class UnrelatedClass():
         child = ChildClass()
         child.call_the_exploding_of_mother()
 
+class ComplexClass():
+    @property
+    def nested(self):
+        return NestedClass()
+
+class NestedClass():
+    def explode_nested(self):
+        raise Exception('I am the nested class')
 ###################################################
 
 
@@ -78,3 +86,10 @@ class TestDebugClasses:
         print(exploding_method.call_args_list)
         # assert 1 == 3
         # assert child.call_the_exploding_of_mother() == 'moooooooocked'
+
+    #@patch.object(ComplexClass, 'nested.explode_nested')
+    @patch.object(ComplexClass, 'nested')
+    def test_with_nested_class(self, nested_property: MagicMock):
+        with_nested = ComplexClass()
+        with_nested.nested.explode_nested()
+        print(nested_property.method_calls)
