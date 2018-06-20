@@ -32,7 +32,10 @@ class DockerApi():
 
             vol_path = vol_params[0]
             vol_mount_pt = vol_params[1]
-            vol_mode = vol_params[2]
+            if len(vol_params) > 2:
+                vol_mode = vol_params[2]
+            else:
+                vol_mode = 'rw'
 
             vol_dict[vol_path] = {
                 'bind': vol_mount_pt,
