@@ -16,6 +16,7 @@ def try_docker_cmd_optimistically(docker_cmd_that_might_fail, *args, **kwargs):
         # Ignore
         pass
 
+@pytest.mark.skip
 class TestDockerModuleLearningTests:
 
     @pytest.fixture
@@ -122,7 +123,7 @@ class TestDockerModuleLearningTests:
             # Then: Container is running
             assert status == 'running'
 
-        def test_kill_background(self, client): #TODO
+        def test_kill_background(self, client):
             # Given: Container is started in the background
             client.containers.run(
                 "ubuntu:latest",
@@ -140,11 +141,15 @@ class TestDockerModuleLearningTests:
             with pytest.raises(docker.errors.NotFound):
                 c = client.containers.get(TEST_CONTAINER_NAME)
 
-        @pytest.mark.skip
-        def test_check_is_running_background(self, client): #TODO
-            raise NotImplementedError("TODO")
+        def test_check_is_running_background(self, client):
+            # Given: Container is started in the background
+            client.containers.run(
+                "ubuntu:latest",
+                "tail -f /dev/null",
+                name=TEST_CONTAINER_NAME,
+                detach=True,
+                remove=True)
 
-        @pytest.mark.skip
-        def test_stop_background(self, client): #TODO
-            raise NotImplementedError("TODO")
-
+            # Then: It is possible to check if running by listing 'running' containers
+            running_container_names = [c.name for c in client.containers.list()]
+            assert TEST_CONTAINER_NAME in running_container_names
