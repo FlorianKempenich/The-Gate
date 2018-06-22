@@ -1,5 +1,9 @@
 """
 Test for the docker_api module
+
+This test only tests the interactions with the `docker` module.
+To ensure that the `docker` module actually does what it's supposed to, check the 
+learning tests.
 """
 import pytest
 from mock import patch, MagicMock
@@ -33,6 +37,13 @@ def docker_api(containers_run_mock):
 
 
 class TestRun:
+    def test_returns_none(self, docker_api, containers_run_mock):
+        """
+        Test docstring
+        """
+        res = docker_api.run("ubuntu:latest", "ls")
+        assert res == None
+
     def test_simple_run(self, docker_api, containers_run_mock):
         docker_api.run("ubuntu:latest", "ls")
         containers_run_mock.assert_called_with("ubuntu:latest", "ls")
@@ -82,3 +93,30 @@ class TestRun:
                     'mode': 'rw'  # Default is 'rw'
                 }
             })
+
+class TestRunBackground:
+    class TestFormatName:
+        def test_valid(self, docker_api, containers_run_mock):
+            res = docker_api.run_background("TestContainer", "ubuntu:latest", "tail -f /dev/null")
+            assert res == "TestContainer"
+
+        def test_leading_space(self, docker_api, containers_run_mock):
+            res = docker_api.run_background("    TestContainer", "ubuntu:latest", "tail -f /dev/null")
+            assert res == "TestContainer"
+
+        def test_trailing_space(self, docker_api, containers_run_mock):
+            res = docker_api.run_background("TestContainer    ", "ubuntu:latest", "tail -f /dev/null")
+            assert res == "TestContainer"
+
+        def test_replace_space_with_dash(self, docker_api, containers_run_mock):
+            res = docker_api.run_background("Test Container", "ubuntu:latest", "tail -f /dev/null")
+            assert res == "Test-Container"
+
+        def test_all_combined(self, docker_api, containers_run_mock):
+            res = docker_api.run_background("  Test Container  ", "ubuntu:latest", "tail -f /dev/null")
+            assert res == "Test-Container"
+
+    def test_fix_container_name(self, docker_api, containers_run_mock):
+        pass
+
+
