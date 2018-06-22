@@ -123,7 +123,7 @@ class TestDockerModuleLearningTests:
             # Then: Container is running
             assert status == 'running'
 
-        def test_kill_background(self, client):
+        def test_stop_background(self, client):
             # Given: Container is started in the background
             client.containers.run(
                 "ubuntu:latest",
@@ -132,12 +132,14 @@ class TestDockerModuleLearningTests:
                 detach=True,
                 remove=True)
 
-            # When: Killing it and waiting 5s
+            # When: Stopping it and waiting 15s
+            #        - 10s timeout
+            #        - 5s extra after forced kill
             container = client.containers.get(TEST_CONTAINER_NAME)
-            container.kill()
-            time.sleep(5)
+            container.stop()
+            time.sleep(15)
 
-            # Then: Container is now killed
+            # Then: Container is now stoped
             with pytest.raises(docker.errors.NotFound):
                 c = client.containers.get(TEST_CONTAINER_NAME)
 
