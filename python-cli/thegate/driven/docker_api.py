@@ -44,9 +44,10 @@ class DockerApi():
             c.name for c in self.docker.containers.list()]
         return container_name in running_container_names
 
-    def stop_background(self, container_name, image_name):
+    def stop_background(self, container_name):
         """ Stop a container running in the background """
-        raise NotImplementedError()
+        running_container = self.docker.containers.get(container_name)
+        running_container.stop()
 
     @staticmethod
     def map_volumes(volumes_tuple: tuple):

@@ -2,7 +2,7 @@
 Test for the docker_api module
 
 This test only tests the interactions with the `docker` module.
-To ensure that the `docker` module actually does what it's supposed to, check the 
+To ensure that the `docker` module actually does what it's supposed to, check the
 learning tests.
 """
 import pytest
@@ -24,8 +24,8 @@ def docker_module_mock(containers_run_mock):
     """
     Mock for the entire 'docker' module.
 
-    Do not access directly for assertions.
-    Use the `containers_run_mock` instead
+    For assertions against the 'docker.from_env().containers.run(.....)' call
+    Use the `containers_run_mock` instead. It is a direct handle to the call mock.
     """
     class DockerModulePatcher:
         def patch(self):
@@ -59,7 +59,7 @@ def docker_api(docker_module_mock):
 @pytest.fixture
 def assert_docker_lib_called_with_args(containers_run_mock):
     def do_assert_with_given_args(*args):
-        """ 
+        """
         Assert that the 'docker.from_env().containers.run(..)' method
         has been called with the given arguments.
 
@@ -75,7 +75,7 @@ def assert_docker_lib_called_with_args(containers_run_mock):
 @pytest.fixture
 def assert_docker_lib_called_with_options(containers_run_mock):
     def do_assert_with_given_options(**expected_opts_as_kwargs):
-        """ 
+        """
         Assert that the 'docker.from_env().containers.run(..)' method
         has been called with the given options (keyword arguments)
 
@@ -225,13 +225,14 @@ class TestRunBackground:
 TEST_CONTAINER_NAME = "TestContainer"
 
 
-class TestIsRunningBackground:
-    @pytest.fixture
-    def container_mock(self):
-        container_mock = MagicMock(name='container_mock')
-        container_mock.name = TEST_CONTAINER_NAME
-        return container_mock
+@pytest.fixture
+def container_mock():
+    container_m = MagicMock(name='container_mock')
+    container_m.name = TEST_CONTAINER_NAME
+    return container_m
 
+
+class TestIsRunningBackground:
     @pytest.fixture
     def fixture_patched_module_WITH_RUNNING_CONTAINER(self, docker_module_mock, container_mock):
         docker_module_mock\
@@ -263,14 +264,23 @@ class TestIsRunningBackground:
         # returns False
         pass
 
-    pass
-
 
 class TestStopBackground:
-    #  def stop_background(self, container_name, image_name):
-    #      raise NotImplementedError()
-    @pytest.mark.skip
-    def test_is_running(self, docker_api):  # TODO
+    #
+    #  def stop_background(self, container_name):
+    #
+    def test_stop(self, docker_api, docker_module_mock, container_mock):
+        # Given: 'docker' module returns 'container_mock' when getting via name: 'TEST_CONTAINER_NAME'
+        docker_module_mock\
+                .from_env.return_value\
+                .containers\
+                .get.return_value = container_mock
 
-        docker_api.is_running_background("Test Container")
+        # When: Stopping 'TEST_CONTAINER_NAME'
+        docker_api.stop_background(TEST_CONTAINER_NAME)
 
+        # Then: Stop method has been called on 'container_mock'
+        container_mock.stop.assert_called()
+
+    def test_container_not_found(self):
+        pass
