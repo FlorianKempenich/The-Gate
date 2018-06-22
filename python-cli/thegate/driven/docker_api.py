@@ -40,7 +40,8 @@ class DockerApi():
 
     def is_running_background(self, container_name):
         """ Check if a container is running in the background """
-        raise NotImplementedError()
+        running_container_names = [c.name for c in self.docker.containers.list()]
+        return container_name in running_container_names
 
     def stop_background(self, container_name, image_name):
         """ Stop a container running in the background """

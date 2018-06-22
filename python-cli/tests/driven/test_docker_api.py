@@ -222,7 +222,50 @@ class TestRunBackground:
         })
 
 
+TEST_CONTAINER_NAME = "TestContainer"
 class TestIsRunningBackground:
+    @pytest.fixture
+    def container_mock(self):
+        container_mock = MagicMock(name='container_mock')
+        container_mock.name = TEST_CONTAINER_NAME
+        return container_mock
+
+    @pytest.fixture
+    def fixture_patched_module_WITH_RUNNING_CONTAINER(self, docker_module_mock, container_mock):
+        docker_module_mock\
+            .from_env.return_value\
+            .containers\
+            .list.return_value = [container_mock]
+
+        return 'patched - has running test container'
+
+    @pytest.fixture
+    def fixture_patched_module_WITHOUT_RUNNING_CONTAINER(self, docker_module_mock, container_mock):
+        docker_module_mock\
+            .from_env.return_value\
+            .containers\
+            .list.return_value = []
+
+        return 'patched - does NOT have running test container'
+
+
+    def test_is_in_list_of_running_containers(self, docker_api, fixture_patched_module_WITH_RUNNING_CONTAINER):
+        assert docker_api.is_running_background(TEST_CONTAINER_NAME) == True
+
+    def test_is_NOT_in_list_of_running_containers(self, docker_api, fixture_patched_module_WITHOUT_RUNNING_CONTAINER):
+        assert docker_api.is_running_background(TEST_CONTAINER_NAME) == False
+
+    def test_is_not_running(self):  # TODO
+        pass
+
+    def test_does_not_exist(self):  # TODO
+        # returns False
+        pass
+
+    pass
+
+
+class TestStopBackground:
     #  def stop_background(self, container_name, image_name):
     #      raise NotImplementedError()
     @pytest.mark.skip
