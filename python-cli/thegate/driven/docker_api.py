@@ -28,6 +28,7 @@ class DockerApi():
             `is_running_background` and `stop_background`
         """
         formatted_name = self.format_name(container_name)
+        self.docker.containers.run("ubuntu", "ls", name="TestContainer", detach=True)
         return formatted_name
 
     def is_running_background(self, container_name):

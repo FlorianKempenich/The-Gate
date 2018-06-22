@@ -6,7 +6,7 @@ To ensure that the `docker` module actually does what it's supposed to, check th
 learning tests.
 """
 import pytest
-from mock import patch, MagicMock
+from mock import patch, MagicMock, call
 from thegate.driven.docker_api import DockerApi
 
 
@@ -96,27 +96,37 @@ class TestRun:
 
 class TestRunBackground:
     class TestFormatName:
-        def test_valid(self, docker_api, containers_run_mock):
+        def test_valid(self, docker_api):
             res = docker_api.run_background("TestContainer", "ubuntu:latest", "tail -f /dev/null")
             assert res == "TestContainer"
 
-        def test_leading_space(self, docker_api, containers_run_mock):
+        def test_leading_space(self, docker_api):
             res = docker_api.run_background("    TestContainer", "ubuntu:latest", "tail -f /dev/null")
             assert res == "TestContainer"
 
-        def test_trailing_space(self, docker_api, containers_run_mock):
+        def test_trailing_space(self, docker_api):
             res = docker_api.run_background("TestContainer    ", "ubuntu:latest", "tail -f /dev/null")
             assert res == "TestContainer"
 
-        def test_replace_space_with_dash(self, docker_api, containers_run_mock):
+        def test_replace_space_with_dash(self, docker_api):
             res = docker_api.run_background("Test Container", "ubuntu:latest", "tail -f /dev/null")
             assert res == "Test-Container"
 
-        def test_all_combined(self, docker_api, containers_run_mock):
+        def test_all_combined(self, docker_api):
             res = docker_api.run_background("  Test Container  ", "ubuntu:latest", "tail -f /dev/null")
             assert res == "Test-Container"
 
-    def test_fix_container_name(self, docker_api, containers_run_mock):
-        pass
+    def test_simple_run(self, docker_api, containers_run_mock: MagicMock):
+        docker_api.run_background("TestContainer", "ubuntu", "ls")
 
+        run_called_with_args, run_called_with_kwargs = containers_run_mock.call_args
+
+        # Assertions on call arguments have been decomposed to not have 
+        # to tests wether more kwargs options are used.
+        # In particular the `remove` option is tested in another test
+        assert ("ubuntu", "ls") == run_called_with_args
+        assert 'name' in run_called_with_kwargs
+        assert run_called_with_kwargs['name'] == "TestContainer"
+        assert 'detach' in run_called_with_kwargs
+        assert run_called_with_kwargs['detach'] == True
 
