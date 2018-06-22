@@ -112,8 +112,12 @@ class TestRunBackground:
             res = docker_api.run_background("Test Container", "ubuntu:latest", "tail -f /dev/null")
             assert res == "Test-Container"
 
+        def test_replace_multiple_spaces_with_single_dash(self, docker_api):
+            res = docker_api.run_background("Test       Container", "ubuntu:latest", "tail -f /dev/null")
+            assert res == "Test-Container"
+
         def test_all_combined(self, docker_api):
-            res = docker_api.run_background("  Test Container  ", "ubuntu:latest", "tail -f /dev/null")
+            res = docker_api.run_background("  Test    Container  ", "ubuntu:latest", "tail -f /dev/null")
             assert res == "Test-Container"
 
     def test_simple_run(self, docker_api, containers_run_mock: MagicMock):

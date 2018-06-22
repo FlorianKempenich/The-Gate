@@ -62,7 +62,5 @@ class DockerApi():
 
     @staticmethod
     def format_name(container_name: str):
-        return container_name\
-                .strip()\
-                .replace(' ', '-')
+        return "-".join(container_name.split())
 
