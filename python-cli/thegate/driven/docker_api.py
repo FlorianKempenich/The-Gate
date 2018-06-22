@@ -14,7 +14,7 @@ class DockerApi():
         self.docker.containers.run(
             image_name,
             command,
-            volumes=self.map_volumes(volumes))
+            volumes=self._map_volumes(volumes))
 
     def run_background(self, container_name, image_name, command, volumes=()):
         """ 
@@ -26,7 +26,7 @@ class DockerApi():
             Use this formatted name to operate on it in
             `is_running_background` and `stop_background`
         """
-        formatted_name = self.format_name(container_name)
+        formatted_name = self._format_name(container_name)
 
         self.docker.containers.run(
             image_name,
@@ -34,7 +34,7 @@ class DockerApi():
             name=formatted_name,
             detach=True,
             remove=True,
-            volumes=self.map_volumes(volumes))
+            volumes=self._map_volumes(volumes))
 
         return formatted_name
 
@@ -46,11 +46,18 @@ class DockerApi():
 
     def stop_background(self, container_name):
         """ Stop a container running in the background """
-        running_container = self.docker.containers.get(container_name)
-        running_container.stop()
+        try:
+            running_container = self.docker.containers.get(container_name)
+            running_container.stop()
+        except docker.errors.NotFound:
+            raise ContainerNotRunningError(
+                "'".join([
+                    'Container ',
+                    container_name,
+                    ' is not running and can not be stopped!']))
 
     @staticmethod
-    def map_volumes(volumes_tuple: tuple):
+    def _map_volumes(volumes_tuple: tuple):
         vol_dict = {}
         for vol in volumes_tuple:
             vol_params = vol.split(':')
@@ -70,5 +77,9 @@ class DockerApi():
         return vol_dict
 
     @staticmethod
-    def format_name(container_name: str):
+    def _format_name(container_name: str):
         return "-".join(container_name.split())
+
+
+class ContainerNotRunningError(Exception):
+    pass

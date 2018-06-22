@@ -7,7 +7,8 @@ learning tests.
 """
 import pytest
 from mock import patch, MagicMock, call
-from thegate.driven.docker_api import DockerApi
+from thegate.driven.docker_api import DockerApi, ContainerNotRunningError
+import docker
 
 
 @pytest.fixture
@@ -29,6 +30,7 @@ def docker_module_mock(containers_run_mock):
     """
     class DockerModulePatcher:
         def patch(self):
+            self.docker_error_module_backup = docker.errors
             self.patched_docker_module = patch(
                 'thegate.driven.docker_api.docker')
             self.docker_module_mock = self.patched_docker_module.start()
@@ -39,12 +41,17 @@ def docker_module_mock(containers_run_mock):
                 .containers\
                 .run = containers_run_mock
 
+        def restore_errors_submodule(self):
+            self.docker_module_mock\
+                .errors = self.docker_error_module_backup
+
         def unpatch(self):
             self.patched_docker_module.stop()
 
     docker_module_patcher = DockerModulePatcher()
     docker_module_patcher.patch()
     docker_module_patcher.attach_containers_run_mock()
+    docker_module_patcher.restore_errors_submodule()
 
     yield docker_module_patcher.docker_module_mock
 
@@ -266,15 +273,16 @@ class TestIsRunningBackground:
 
 
 class TestStopBackground:
-    #
-    #  def stop_background(self, container_name):
-    #
+    @staticmethod
+    def unpatch_docker_error_NotFound(docker_module_mock):
+        docker_module_mock.errors.NotFound = docker.errors.NotFound
+
     def test_stop(self, docker_api, docker_module_mock, container_mock):
         # Given: 'docker' module returns 'container_mock' when getting via name: 'TEST_CONTAINER_NAME'
         docker_module_mock\
-                .from_env.return_value\
-                .containers\
-                .get.return_value = container_mock
+            .from_env.return_value\
+            .containers\
+            .get.return_value = container_mock
 
         # When: Stopping 'TEST_CONTAINER_NAME'
         docker_api.stop_background(TEST_CONTAINER_NAME)
@@ -282,5 +290,19 @@ class TestStopBackground:
         # Then: Stop method has been called on 'container_mock'
         container_mock.stop.assert_called()
 
-    def test_container_not_found(self):
-        pass
+    def test_container_not_found(self, docker_api, docker_module_mock):
+        # Given: 'docker' module throw 'docker.errors.NotFound' exception
+        docker_module_mock\
+            .from_env.return_value\
+            .containers\
+            .get.side_effect = docker.errors.NotFound("No such container: " + TEST_CONTAINER_NAME)
+
+        # When: Stopping 'TEST_CONTAINER_NAME'
+        # Then: Exception is translated into domain Exception
+        with pytest.raises(ContainerNotRunningError) as translated_error:
+            docker_api.stop_background(TEST_CONTAINER_NAME)
+
+        assert "Container '"\
+            + TEST_CONTAINER_NAME\
+            + "' is not running and can not be stopped!"\
+            == str(translated_error.value)
