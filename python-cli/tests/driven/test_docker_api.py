@@ -223,6 +223,8 @@ class TestRunBackground:
 
 
 TEST_CONTAINER_NAME = "TestContainer"
+
+
 class TestIsRunningBackground:
     @pytest.fixture
     def container_mock(self):
@@ -247,7 +249,6 @@ class TestIsRunningBackground:
             .list.return_value = []
 
         return 'patched - does NOT have running test container'
-
 
     def test_is_in_list_of_running_containers(self, docker_api, fixture_patched_module_WITH_RUNNING_CONTAINER):
         assert docker_api.is_running_background(TEST_CONTAINER_NAME) == True
