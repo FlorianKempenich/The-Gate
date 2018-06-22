@@ -35,6 +35,38 @@ def docker_api(containers_run_mock):
     yield DockerApi()
     unpatch_docker_module(patched_docker_module)
 
+@pytest.fixture
+def assert_docker_lib_called_with_args(containers_run_mock):
+    def do_assert_with_given_args(*args):
+        """ 
+        Assert that the 'docker.from_env().containers.run(..)' method
+        has been called with the given arguments.
+
+        Does not check keyword arguments!
+
+        """
+        run_called_with_args, _ = containers_run_mock.call_args
+        assert args == run_called_with_args
+
+    return do_assert_with_given_args
+
+@pytest.fixture
+def assert_docker_lib_called_with_options(containers_run_mock):
+    def do_assert_with_given_options(**expected_opts_as_kwargs):
+        """ 
+        Assert that the 'docker.from_env().containers.run(..)' method
+        has been called with the given options (keyword arguments)
+        
+        It is not exclusive! Other options might have been given.
+
+        Does not check regular arguments!
+        """
+        _, run_called_with_kwargs = containers_run_mock.call_args
+        for option in expected_opts_as_kwargs:
+            assert option in run_called_with_kwargs
+            assert expected_opts_as_kwargs[option] == run_called_with_kwargs[option]
+
+    return do_assert_with_given_options
 
 class TestRun:
     def test_returns_none(self, docker_api, containers_run_mock):
@@ -44,31 +76,26 @@ class TestRun:
         res = docker_api.run("ubuntu:latest", "ls")
         assert res == None
 
-    def test_simple_run(self, docker_api, containers_run_mock):
+    def test_simple_run(self, docker_api, assert_docker_lib_called_with_args):
         docker_api.run("ubuntu:latest", "ls")
-        containers_run_mock.assert_called_with("ubuntu:latest", "ls")
+        assert_docker_lib_called_with_args("ubuntu:latest", "ls")
 
-    def test_run_with_volume_single(self, docker_api, containers_run_mock):
+    def test_run_with_volume_single(self, docker_api, assert_docker_lib_called_with_options):
         docker_api.run("ubuntu:latest", "ls",
                        volumes=("/home:/mounted_home:rw",))
 
-        containers_run_mock.assert_called_with(
-            "ubuntu:latest",
-            "ls",
-            volumes={
-                '/home': {
+        assert_docker_lib_called_with_options(volumes={
+            '/home': {
                     'bind': '/mounted_home',
                     'mode': 'rw'
                 }
             })
 
-    def test_run_with_volume_single_default_mode(self, docker_api, containers_run_mock):
+    def test_run_with_volume_single_default_mode(self, docker_api, assert_docker_lib_called_with_options):
         docker_api.run("ubuntu:latest", "ls",
                        volumes=("/home:/mounted_home",))
 
-        containers_run_mock.assert_called_with(
-            "ubuntu:latest",
-            "ls",
+        assert_docker_lib_called_with_options(
             volumes={
                 '/home': {
                     'bind': '/mounted_home',
@@ -76,14 +103,11 @@ class TestRun:
                 }
             })
 
-    def test_run_with_volume_multiple(self, docker_api, containers_run_mock):
+    def test_run_with_volume_multiple(self, docker_api, assert_docker_lib_called_with_options):
         docker_api.run("ubuntu:latest", "ls",
                        volumes=("/home:/mounted_home:ro", "./other:/hey",))
 
-        containers_run_mock.assert_called_with(
-            "ubuntu:latest",
-            "ls",
-            volumes={
+        assert_docker_lib_called_with_options(volumes={
                 '/home': {
                     'bind': '/mounted_home',
                     'mode': 'ro'
@@ -93,6 +117,14 @@ class TestRun:
                     'mode': 'rw'  # Default is 'rw'
                 }
             })
+
+
+#  Methods to implement / test
+#  def is_running_background(self, container_name):
+#      raise NotImplementedError()
+#
+#  def stop_background(self, container_name, image_name):
+#      raise NotImplementedError()
 
 class TestRunBackground:
     class TestFormatName:
@@ -120,17 +152,50 @@ class TestRunBackground:
             res = docker_api.run_background("  Test    Container  ", "ubuntu:latest", "tail -f /dev/null")
             assert res == "Test-Container"
 
-    def test_simple_run(self, docker_api, containers_run_mock: MagicMock):
+    def test_simple_run(
+            self, 
+            docker_api, 
+            assert_docker_lib_called_with_args,
+            assert_docker_lib_called_with_options):
         docker_api.run_background("TestContainer", "ubuntu", "ls")
 
-        run_called_with_args, run_called_with_kwargs = containers_run_mock.call_args
+        assert_docker_lib_called_with_args("ubuntu", "ls")
+        assert_docker_lib_called_with_options(detach=True)
 
-        # Assertions on call arguments have been decomposed to not have 
-        # to tests wether more kwargs options are used.
-        # In particular the `remove` option is tested in another test
-        assert ("ubuntu", "ls") == run_called_with_args
-        assert 'name' in run_called_with_kwargs
-        assert run_called_with_kwargs['name'] == "TestContainer"
-        assert 'detach' in run_called_with_kwargs
-        assert run_called_with_kwargs['detach'] == True
+    def test_container_started_with_rm_option(
+            self, 
+            docker_api, 
+            assert_docker_lib_called_with_options):
+        docker_api.run_background("TestContainer", "ubuntu", "ls")
+
+        assert_docker_lib_called_with_options(remove=True)
+
+    def test_container_started_with_formatted_name(
+            self, 
+            docker_api, 
+            assert_docker_lib_called_with_options):
+        docker_api.run_background("   Test    Container  ", "ubuntu", "ls")
+
+        assert_docker_lib_called_with_options(name="Test-Container")
+
+    def test_with_volumes(
+            self,
+            docker_api,
+            assert_docker_lib_called_with_options):
+        docker_api.run_background(
+                "TestContainer", 
+                "ubuntu:latest", 
+                "ls", 
+                volumes=("/home:/mounted_home:ro", "./other:/hey",))
+
+        assert_docker_lib_called_with_options(volumes={
+                '/home': {
+                    'bind': '/mounted_home',
+                    'mode': 'ro'
+                },
+                './other': {
+                    'bind': '/hey',
+                    'mode': 'rw'  # Default is 'rw'
+                }
+            })
 

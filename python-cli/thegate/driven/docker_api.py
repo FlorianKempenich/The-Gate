@@ -11,11 +11,10 @@ class DockerApi():
 
     def run(self, image_name, command, volumes=()):
         """ Run a container syncronously """
-        volumes_dict = self.map_volumes(volumes)
-        if not volumes_dict == {}:
-            self.docker.containers.run(image_name, command, volumes=volumes_dict)
-        else:
-            self.docker.containers.run(image_name, command)
+        self.docker.containers.run(
+            image_name,
+            command,
+            volumes=self.map_volumes(volumes))
 
     def run_background(self, container_name, image_name, command, volumes=()):
         """ 
@@ -28,7 +27,15 @@ class DockerApi():
             `is_running_background` and `stop_background`
         """
         formatted_name = self.format_name(container_name)
-        self.docker.containers.run("ubuntu", "ls", name="TestContainer", detach=True)
+
+        self.docker.containers.run(
+            image_name,
+            command,
+            name=formatted_name,
+            detach=True,
+            remove=True,
+            volumes=self.map_volumes(volumes))
+
         return formatted_name
 
     def is_running_background(self, container_name):
@@ -38,7 +45,6 @@ class DockerApi():
     def stop_background(self, container_name, image_name):
         """ Stop a container running in the background """
         raise NotImplementedError()
-
 
     @staticmethod
     def map_volumes(volumes_tuple: tuple):
@@ -63,4 +69,3 @@ class DockerApi():
     @staticmethod
     def format_name(container_name: str):
         return "-".join(container_name.split())
-
